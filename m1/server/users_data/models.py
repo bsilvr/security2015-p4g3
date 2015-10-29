@@ -6,7 +6,7 @@ from player.models import Player
 # Create your models here.
 
 class User_key(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, primary_key=True)
     user_key = models.BinaryField(max_length=128)
     player_used = models.ForeignKey(Player, null=True)
 

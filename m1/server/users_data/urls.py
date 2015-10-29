@@ -1,4 +1,4 @@
-"""server URL Configuration
+"""homeserver URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.8/topics/http/urls/
@@ -13,26 +13,15 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.contrib import admin
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from server import views, settings
-from books import urls as books_urls
-from users_data import urls as users_urls
-
+from users_data import views
 
 urlpatterns = [
-    url(r'^$', views.home, name='server'),
-    url(r'^register/$', views.register_page, name='register'),
-
-
-    url(r'^books/', include(books_urls)),
-    url(r'^users/', include(users_urls)),
+	url(r'^create_user/$', views.create_user, name='create_user'),
+    url(r'^login/$', views.user_login, name="login"),
+    url(r'^logout/$', views.user_logout, name="logout"),
 
 
 
-
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.MEDIA_ROOT}),
 ]

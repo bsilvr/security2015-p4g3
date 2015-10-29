@@ -26,9 +26,16 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script type="text/javascript">
+    function start() {
+        get_books();
+        checkCookie();
+    }
+    </script>
+
 </head>
 
-<body onload="get_books()">
+<body onload="start()">
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -50,6 +57,7 @@
                         <li>
                         <!-- HTML for dropdown log in -->
                         <!-- Code from: http://jsfiddle.net/cpvZC/10/ -->
+                        <div id="notLogedIn">
                             <header class="cf">
                                 <nav>
                                     <ul>
@@ -58,10 +66,11 @@
                                                 Log in <span>&#x25BC;</span>
                                             </a>
                                             <div id="login-content">
-                                                <form>
+                                                <form method="post" action="/users/login/">
+                                                    {% csrf_token %}
                                                     <fieldset id="inputs">
-                                                        <input id="username" type="email" name="Email" placeholder="Your email address" required>
-                                                        <input id="password" type="password" name="Password" placeholder="Password" required>
+                                                        <input id="email" type="email" name="email" placeholder="Your email address" required>
+                                                        <input id="password" type="password" name="password" placeholder="Password" required>
                                                     </fieldset>
                                                     <fieldset id="actions">
                                                         <input type="submit" id="submit" value="Log in">
@@ -70,11 +79,21 @@
                                             </div>
                                         </li>
                                         <li id="signup">
-                                            <a href="">Sign up FREE</a>
+                                            <a href="/register/">Sign up FREE</a>
                                         </li>
                                     </ul>
                                 </nav>
                             </header>
+                        </div>
+                        <div id="logedIn" class="navbar-brand">
+                            <a id="username"></a>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <form action = "/users/logout/" method = "post">
+                                    {% csrf_token %}
+                                    <button type="submit" name="updated" value="Logout" formaction="/users/logout/" formmethod="POST" class="btn btn-primary">Logout</button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -122,6 +141,9 @@
 
     <!-- My JavaScript -->
     <script src="{% static 'index_page/js/get_books.js' %}"></script>
+
+    <script src="{% static 'index_page/js/login.js' %}"></script>
+
 
 
     <!-- Css Classes for dropdown log in -->
@@ -348,15 +370,7 @@
     </style>
 
     <script>
-        $(document).ready(function(){
-          $('#login-trigger').click(function(){
-            $(this).next('#login-content').slideToggle();
-            $(this).toggleClass('active');
 
-            if ($(this).hasClass('active')) $(this).find('span').html('&#x25B2;')
-              else $(this).find('span').html('&#x25BC;')
-            })
-        });
     </script>
 
 </body>

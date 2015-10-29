@@ -13,3 +13,11 @@ def home(request):
 	})
 
 	return render(request, template, context)
+
+
+def register_page(request):
+    template = 'registration.html'
+
+    context = {}
+
+    return render(request, template, context)

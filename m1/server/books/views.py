@@ -30,3 +30,4 @@ def get_book(request):
         serializer = BookSerializer(book, many=False)
 
         return Response(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
+
