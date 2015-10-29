@@ -19,6 +19,7 @@ from books import views
 
 urlpatterns = [
 	url(r'^get_books/$', views.get_books, name='get_books'),
+    url(r'^get_book/$', views.get_book, name="get_book"),
 
 
 ]
