@@ -13,3 +13,20 @@ def get_books(request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_book(request):
+    if request.method == 'GET':
+        book_id = request.GET.get('book_id')
+        print book_id
+        if book_id == None or book_id == "":
+            return Response("Argument book cannot be empty", status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            book = Book.objects.get(ebook_id=book_id)
+        except:
+            return Response("Book with that argument doesn't exist in the database", status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = BookSerializer(book, many=False)
+
+        return Response(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
