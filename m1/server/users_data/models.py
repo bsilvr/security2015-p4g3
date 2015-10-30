@@ -19,4 +19,3 @@ class Purchases(models.Model):
     user = models.ForeignKey(User)
     book_id = models.ForeignKey(Book)
     random = models.BinaryField(max_length=128)
-    file_key = models.BinaryField(max_length=128)

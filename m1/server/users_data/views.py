@@ -1,4 +1,5 @@
 import os
+import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import render
-from users_data.models import User_key
-
+from users_data.models import User_key, Purchases, Devices
+from books.models import Book
 
 
 
@@ -21,13 +22,17 @@ def create_user(request):
     fname = request.POST['first_name']
     lname = request.POST['last_name']
 
+    u = User.objects.get(email=email)
+    if not u is None:
+        return Response('User Already Exists', status=status.HTTP_400_BAD_REQUEST)
+
     try:
         validate_email(email)
     except ValidationError as e:
-        return Response('Invalid email', status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response('Invalid email', status=status.HTTP_400_BAD_REQUEST)
 
     if password != confirm:
-        return Response("Passwords don't match", status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response("Passwords don't match", status=status.HTTP_400_BAD_REQUEST)
 
 
     user = User.objects.create_user(email, email=email, password=password)
@@ -63,10 +68,10 @@ def user_login(request):
 
             return response
         else:
-            return Response('Account Disabled', status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response('Account Disabled', status=status.HTTP_400_BAD_REQUEST)
 
     else:
-        return Response('Invalid email or password', status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response('Invalid email or password', status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def user_logout(request):
@@ -80,6 +85,50 @@ def user_logout(request):
 
 
 
+@api_view(['POST'])
+def buy_book(request):
+    template = 'index.html'
+    email = request.POST['email']
+    email = email[1:-1]
 
-def buybook(request):
-    pass
+    book_id = request.POST['book_id']
+
+    book = Book.objects.get(ebook_id=book_id)
+
+    if book is None:
+        return Response("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
+
+
+    user = User.objects.get(email=email)
+
+    if user is None:
+        return Response("User doesn't exists", status=status.HTTP_400_BAD_REQUEST)
+
+
+    random = os.urandom(128)
+
+    purchase = Purchases(user=user, book_id=book, random=random)
+
+    purchase.save()
+
+    return render(request, template)
+
+
+@api_view(['GET'])
+def get_purchases(request):
+    email = request.GET.get('user')
+    email = email[1:-1]
+
+    if email == "" or email is None:
+        return Response('Email was empty', status=status.HTTP_400_BAD_REQUEST)
+
+    user_id = User.objects.get(email=email)
+
+    purchases = Purchases.objects.all().filter(user=user_id)
+    j = []
+    for i in purchases:
+        p = {'user': i.user.email, 'book_id': i.book_id.ebook_id}
+        j.append(p)
+
+
+    return Response(json.dumps(j), status=status.HTTP_200_OK)

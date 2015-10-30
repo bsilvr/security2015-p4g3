@@ -18,7 +18,7 @@ def get_books(request):
 def get_book(request):
     if request.method == 'GET':
         book_id = request.GET.get('book_id')
-        print book_id
+
         if book_id == None or book_id == "":
             return Response("Argument book cannot be empty", status=status.HTTP_400_BAD_REQUEST)
 

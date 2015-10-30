@@ -21,6 +21,9 @@ urlpatterns = [
 	url(r'^create_user/$', views.create_user, name='create_user'),
     url(r'^login/$', views.user_login, name="login"),
     url(r'^logout/$', views.user_logout, name="logout"),
+    url(r'^buy_book/$', views.buy_book, name="buy_book"),
+    url(r'^get_purchases/$', views.get_purchases, name="get_purchases"),
+
 
 
 
