@@ -22,8 +22,10 @@ def create_user(request):
     fname = request.POST['first_name']
     lname = request.POST['last_name']
 
-    u = User.objects.get(email=email)
-    if not u is None:
+    u = User.objects.all().filter(email=email)
+    print u
+    print len(u)
+    if len(u) != 0:
         return Response('User Already Exists', status=status.HTTP_400_BAD_REQUEST)
 
     try:
@@ -47,8 +49,19 @@ def create_user(request):
 
     user_extra_info.save()
 
-    return Response('User created', status=status.HTTP_200_OK)
+    user = authenticate(username=email, password=password)
 
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            template = 'index.html'
+            response = render(request, template)
+            response.set_cookie(key='fname', value=user.first_name)
+            response.set_cookie(key='email', value=user.email)
+
+            return response
+
+    return Response('Invalid email or password', status=status.HTTP_400_BAD_REQUEST)
 
 
 # code adapted from: https://docs.djangoproject.com/en/1.8/topics/auth/default/

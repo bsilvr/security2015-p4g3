@@ -49,11 +49,11 @@ function purchase_book(){
     type: "POST",
     data : {csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value, "email": email, "book_id": id },
     dataType : "json",
-    success: function( data ){
-        document.location.reload(true);
-    }
 });
+    document.location.reload(true);
+
 }
+
 
 
 function processArray(){
