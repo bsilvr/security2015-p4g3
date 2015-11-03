@@ -1,3 +1,4 @@
 *.sqlite3
 *.pyc
 m1/server/.idea/*
+m1/player/.metadata/*
