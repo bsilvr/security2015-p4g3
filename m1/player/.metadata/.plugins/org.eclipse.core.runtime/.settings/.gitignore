@@ -10,3 +10,8 @@
 /org.eclipse.ui.prefs
 /org.eclipse.ui.workbench.prefs
 /org.tigris.subversion.subclipse.tools.usage.prefs
+/org.eclipse.ant.ui.prefs
+/org.eclipse.fx.ide.ui.prefs
+/org.eclipse.jdt.debug.ui.prefs
+/org.eclipse.pde.api.tools.prefs
+/org.eclipse.wst.sse.ui.prefs
