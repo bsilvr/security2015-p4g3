@@ -4,7 +4,7 @@ var purchased_books = [];
 function get_books(){
     $.ajax({
       type: "GET",
-      url: "http://127.0.0.1:8000/books/get_books/",
+      url: "/books/get_books/",
       dataType: "json",
       success: saveArray,
       error: function (xhr, status, err) {
@@ -14,9 +14,11 @@ function get_books(){
 
 function get_purchases(){
     var email = getCookie("email");
+    email = email.replace(/"/g,"");
+
     $.ajax({
       type: "GET",
-      url: "http://127.0.0.1:8000/users/get_purchases/?user=" + email,
+      url: "/users/get_purchases/?user=" + email,
       dataType: "json",
       success: savePurchases,
       error: function (xhr, status, err) {
@@ -31,7 +33,7 @@ function saveArray(array){
 
 function savePurchases(array){
     purchased_books = [];
-    var arr = JSON.parse(array)
+    var arr = array;
     for (var i = 0; i < arr.length; i++){
         purchased_books[i] = arr[i].book_id;
     }

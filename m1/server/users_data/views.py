@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import render
+from django.http import HttpResponse
 from users_data.models import User_key, Purchases, Devices
 from books.models import Book
 
@@ -131,8 +132,7 @@ def buy_book(request):
 def get_purchases(request):
     email = request.GET.get('user')
 
-    if email[0] == 43:
-        email = email[1:-1]
+    print email
 
     if email == "" or email is None:
         return Response('Email was empty', status=status.HTTP_400_BAD_REQUEST)
@@ -145,4 +145,4 @@ def get_purchases(request):
         p = {'user': i.user.email, 'book_id': i.book_id.ebook_id}
         j.append(p)
 
-    return Response(json.dumps(j), status=status.HTTP_200_OK)
+    return HttpResponse(json.dumps(j), status=status.HTTP_200_OK)
