@@ -130,7 +130,9 @@ def buy_book(request):
 @api_view(['GET'])
 def get_purchases(request):
     email = request.GET.get('user')
-    email = email[1:-1]
+
+    if email[0] == 43:
+        email = email[1:-1]
 
     if email == "" or email is None:
         return Response('Email was empty', status=status.HTTP_400_BAD_REQUEST)
@@ -142,6 +144,5 @@ def get_purchases(request):
     for i in purchases:
         p = {'user': i.user.email, 'book_id': i.book_id.ebook_id}
         j.append(p)
-
 
     return Response(json.dumps(j), status=status.HTTP_200_OK)
