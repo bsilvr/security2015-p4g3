@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from users_data.models import User_key, Purchases, Devices
 from books.models import Book
@@ -24,8 +24,7 @@ def create_user(request):
     lname = request.POST['last_name']
 
     u = User.objects.all().filter(email=email)
-    print u
-    print len(u)
+
     if len(u) != 0:
         return Response('User Already Exists', status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,8 +54,7 @@ def create_user(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            template = 'index.html'
-            response = render(request, template)
+            response = redirect('/')
             response.set_cookie(key='fname', value=user.first_name)
             response.set_cookie(key='email', value=user.email)
 
@@ -76,7 +74,7 @@ def user_login(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            response = render(request, template)
+            response = redirect('/')
             response.set_cookie(key='fname', value=user.first_name)
             response.set_cookie(key='email', value=user.email)
 
@@ -91,7 +89,7 @@ def user_login(request):
 def user_logout(request):
     template = 'index.html'
     logout(request)
-    response = render(request, template)
+    response = redirect('/')
     response.set_cookie(key='fname', value="")
     response.set_cookie(key='email', value="")
 
@@ -131,8 +129,6 @@ def buy_book(request):
 @api_view(['GET'])
 def get_purchases(request):
     email = request.GET.get('user')
-
-    print email
 
     if email == "" or email is None:
         return Response('Email was empty', status=status.HTTP_400_BAD_REQUEST)
