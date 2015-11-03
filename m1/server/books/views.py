@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,7 +12,7 @@ def get_books(request):
     if request.method == 'GET':
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
-        return Response(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
+        return HttpResponse(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_book(request):
@@ -29,5 +29,5 @@ def get_book(request):
 
         serializer = BookSerializer(book, many=False)
 
-        return Response(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
+        return HttpResponse(JSONRenderer().render(serializer.data), status=status.HTTP_200_OK)
 

@@ -60,7 +60,7 @@ function purchase_book(){
 
 function processArray(){
     var out = "";
-    var arr = JSON.parse(all_books)
+    var arr = all_books;
 
     for (var i = 0; i < arr.length; i++){
         out += "<div class=\"col-md-4 portfolio-item\">"+
