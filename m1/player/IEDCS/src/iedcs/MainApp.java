@@ -1,7 +1,6 @@
 package iedcs;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
@@ -45,12 +42,12 @@ public class MainApp extends Application {
      */
     public MainApp() throws MalformedURLException, IOException {
 
-    	/*String url = "http://127.0.0.1:8000/users/get_purchases/";
-    	String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
+    	String url = "http://127.0.0.1:8000/users/get_purchases/";
+    	String charset = "UTF-8";
     	String param1 = "bernardomrferreira@ua.pt";
     	// ...
 
-    	String query = "user=%22"+ param1 + "%22";
+    	String query = "user="+ param1;
 
     	URLConnection connection = new URL(url + "?" + query).openConnection();
     	connection.setRequestProperty("Accept-Charset", charset);
@@ -59,9 +56,8 @@ public class MainApp extends Application {
     	String result = getStringFromInputStream(response);
 
     	System.out.print(result);
-    	*/
 
-    	String url = "http://127.0.0.1:8000/users/get_purchases/?format=api&user=%22bernardomrferreira%40ua.pt%22";
+    	/*String url = "http://127.0.0.1:8000/users/get_purchases/?user=bernardomrferreira@ua.pt";
 
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -70,7 +66,7 @@ public class MainApp extends Application {
 		con.setRequestMethod("GET");
 
 		//add request header
-		con.setRequestProperty("user", "bernardomrferreira@ua.pt");
+		//con.setRequestProperty("User-Agent", USER_AGENT);
 
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
@@ -88,6 +84,9 @@ public class MainApp extends Application {
 
 		//print result
 		System.out.println(response.toString());
+
+		*/
+
 
 
     	File dracula = new File("resources/books/dracula.txt");
