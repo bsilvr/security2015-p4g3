@@ -1,10 +1,19 @@
 package iedcs;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
@@ -31,8 +40,56 @@ public class MainApp extends Application {
 
     /**
      * Constructor
+     * @throws IOException
+     * @throws MalformedURLException
      */
-    public MainApp() {
+    public MainApp() throws MalformedURLException, IOException {
+
+    	/*String url = "http://127.0.0.1:8000/users/get_purchases/";
+    	String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
+    	String param1 = "bernardomrferreira@ua.pt";
+    	// ...
+
+    	String query = "user=%22"+ param1 + "%22";
+
+    	URLConnection connection = new URL(url + "?" + query).openConnection();
+    	connection.setRequestProperty("Accept-Charset", charset);
+    	InputStream response = connection.getInputStream();
+
+    	String result = getStringFromInputStream(response);
+
+    	System.out.print(result);
+    	*/
+
+    	String url = "http://127.0.0.1:8000/users/get_purchases/?format=api&user=%22bernardomrferreira%40ua.pt%22";
+
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		// optional default is GET
+		con.setRequestMethod("GET");
+
+		//add request header
+		con.setRequestProperty("user", "bernardomrferreira@ua.pt");
+
+		int responseCode = con.getResponseCode();
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+
+		//print result
+		System.out.println(response.toString());
+
+
     	File dracula = new File("resources/books/dracula.txt");
     	File sawyer = new File("resources/books/sawyer.txt");
         // Some sample data
@@ -133,15 +190,45 @@ public class MainApp extends Application {
     }
 
 	public static void main(String[] args) throws IOException {
-		System.getProperties().list(System.out);
+		/*System.getProperties().list(System.out);
 
 		URL whatismyip = new URL("http://checkip.amazonaws.com");
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 		                whatismyip.openStream()));
 
 		String ip = in.readLine(); //you get the IP as a String
-		System.out.println(ip);
+		System.out.println(ip);*/
 
 		launch(args);
 	}
+
+	private static String getStringFromInputStream(InputStream is) {
+
+		BufferedReader br = null;
+		StringBuilder sb = new StringBuilder();
+
+		String line;
+		try {
+
+			br = new BufferedReader(new InputStreamReader(is));
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return sb.toString();
+
+	}
+
 }
