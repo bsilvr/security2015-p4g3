@@ -5,13 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
 import iedcs.view.BookReaderController;
@@ -42,15 +38,14 @@ public class MainApp extends Application {
      */
     public MainApp() throws MalformedURLException, IOException {
 
+
     	String url = "http://127.0.0.1:8000/users/get_purchases/";
-    	String charset = "UTF-8";
     	String param1 = "bernardomrferreira@ua.pt";
     	// ...
 
     	String query = "user="+ param1;
 
     	URLConnection connection = new URL(url + "?" + query).openConnection();
-    	connection.setRequestProperty("Accept-Charset", charset);
     	InputStream response = connection.getInputStream();
 
     	String result = getStringFromInputStream(response);
