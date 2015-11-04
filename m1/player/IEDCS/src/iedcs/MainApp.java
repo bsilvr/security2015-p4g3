@@ -1,5 +1,7 @@
 package iedcs;
 
+import java.util.Stack;
+import iedcs.resources.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -38,59 +40,63 @@ public class MainApp extends Application {
      */
     public MainApp() throws MalformedURLException, IOException {
 
-
-    	String url = "http://127.0.0.1:8000/users/get_purchases/";
-    	String param1 = "bernardomrferreira@ua.pt";
-    	// ...
-
-    	String query = "user="+ param1;
-
-    	URLConnection connection = new URL(url + "?" + query).openConnection();
-    	InputStream response = connection.getInputStream();
-
-    	String result = getStringFromInputStream(response);
-
-    	System.out.print(result);
-
-    	/*String url = "http://127.0.0.1:8000/users/get_purchases/?user=bernardomrferreira@ua.pt";
-
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-		// optional default is GET
-		con.setRequestMethod("GET");
-
-		//add request header
-		//con.setRequestProperty("User-Agent", USER_AGENT);
-
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
-
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-
-		//print result
-		System.out.println(response.toString());
-
-		*/
-
-
-
-    	File dracula = new File("resources/books/dracula.txt");
-    	File sawyer = new File("resources/books/sawyer.txt");
-        // Some sample data
-        bookData.add(new Book("Mark Twain", "The Adventures of Tom Sawyer", "Inglês", "https://www.gutenberg.org/cache/epub/74/pg74.cover.medium.jpg", "1", sawyer));
-        bookData.add(new Book("Bram Stoker", "Dracula", "Inglês", "https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg", "2", dracula));
+    	Stack<Integer> books = getUserBooksIds();
+    	while ( !books.empty() )
+        {
+    		getUserBooksInfo(books.pop());
+        }
 
     }
+
+	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException {
+		/*Livros estaticos para ja*/
+		File dracula = new File("resources/books/dracula.txt");
+    	File sawyer = new File("resources/books/sawyer.txt");
+    	/*------------------------*/
+
+		String url = "http://127.0.0.1:8000/books/get_book/";
+		String param1 = pop.toString();
+		String query = "book_id="+ param1;
+
+		URLConnection connection = new URL(url + "?" + query).openConnection();
+		InputStream response = connection.getInputStream();
+
+		String result = getStringFromInputStream(response);
+		System.out.println(result);
+		JsonObject items = Json.parse(result).asObject();
+
+		System.out.println(items.get("title").asString());
+		String author = items.get("author").asString();
+		String title = items.get("title").asString();
+		String language = items.get("language").asString();
+		String cover = items.get("cover").asString();
+		String id = Integer.toString(items.get("ebook_id").asInt());
+		
+        bookData.add(new Book(author,title,language,cover,id, sawyer));
+
+
+
+	}
+
+	public Stack<Integer> getUserBooksIds() throws MalformedURLException, IOException{
+		Stack<Integer> lifo = new Stack<Integer>();
+		String url = "http://127.0.0.1:8000/users/get_purchases/";
+		String param1 = "bernardomrferreira@ua.pt";
+		String query = "user="+ param1;
+
+		URLConnection connection = new URL(url + "?" + query).openConnection();
+		InputStream response = connection.getInputStream();
+
+		String result = getStringFromInputStream(response);
+		result = "{\"items\": " + result+"}";
+
+		JsonArray items = Json.parse(result).asObject().get("items").asArray();
+		for (JsonValue item : items) {
+		  lifo.push(item.asObject().getInt("book_id", 0));
+		}
+		return lifo;
+	}
+
 
     /**
      * Returns the data as an observable list of Books.
