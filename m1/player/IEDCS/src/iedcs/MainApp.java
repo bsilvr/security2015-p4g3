@@ -13,6 +13,7 @@ import java.net.URLConnection;
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
 import iedcs.view.BookReaderController;
+import iedcs.view.LoginController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,17 +41,10 @@ public class MainApp extends Application {
      */
     public MainApp() throws MalformedURLException, IOException {
 
-    	Stack<Integer> books = getUserBooksIds();
-    	while ( !books.empty() )
-        {
-    		getUserBooksInfo(books.pop());
-        }
-
     }
 
 	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException {
 		/*Livros estaticos para ja*/
-		File dracula = new File("resources/books/dracula.txt");
     	File sawyer = new File("resources/books/sawyer.txt");
     	/*------------------------*/
 
@@ -62,26 +56,26 @@ public class MainApp extends Application {
 		InputStream response = connection.getInputStream();
 
 		String result = getStringFromInputStream(response);
-		System.out.println(result);
 		JsonObject items = Json.parse(result).asObject();
 
 		System.out.println(items.get("title").asString());
+
 		String author = items.get("author").asString();
 		String title = items.get("title").asString();
 		String language = items.get("language").asString();
 		String cover = items.get("cover").asString();
 		String id = Integer.toString(items.get("ebook_id").asInt());
-		
+
         bookData.add(new Book(author,title,language,cover,id, sawyer));
 
 
 
 	}
 
-	public Stack<Integer> getUserBooksIds() throws MalformedURLException, IOException{
+	public Stack<Integer> getUserBooksIds(String email) throws MalformedURLException, IOException{
 		Stack<Integer> lifo = new Stack<Integer>();
 		String url = "http://127.0.0.1:8000/users/get_purchases/";
-		String param1 = "bernardomrferreira@ua.pt";
+		String param1 = email;
 		String query = "user="+ param1;
 
 		URLConnection connection = new URL(url + "?" + query).openConnection();
@@ -115,7 +109,7 @@ public class MainApp extends Application {
 
         initRootLayout();
 
-        showBooksOverview();
+        showLogin();
 	}
 
 	/**
@@ -137,6 +131,34 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Shows the book overview inside the root layout.
+     */
+    public void showBooksOverview(String email) {
+        try {
+        	
+        	Stack<Integer> books = getUserBooksIds(email);
+        	while ( !books.empty() )
+            {
+        		getUserBooksInfo(books.pop());
+            }
+        	
+            // Load book overview.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/BooksOverview.fxml"));
+            AnchorPane bookOverview = (AnchorPane) loader.load();
+
+            // Set book overview into the center of root layout.
+            rootLayout.setCenter(bookOverview);
+
+         // Give the controller access to the main app.
+            BookOverviewController controller = loader.getController();
+            controller.setMainApp(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * Shows the book overview inside the root layout.
      */
@@ -174,6 +196,28 @@ public class MainApp extends Application {
 
          // Give the controller access to the main app.
             BookReaderController controller = loader.getController();
+            controller.setMainApp(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Shows the login
+     */
+    public void showLogin() {
+        try {
+            // Load book overview.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/LoginForm.fxml"));
+            AnchorPane login = (AnchorPane) loader.load();
+
+            // Set book reader into the center of root layout.
+            rootLayout.setCenter(login);
+
+         // Give the controller access to the main app.
+            LoginController controller = loader.getController();
             controller.setMainApp(this);
 
         } catch (IOException e) {
