@@ -1,6 +1,12 @@
 package iedcs;
 
 import java.util.Stack;
+
+import org.apache.http.*;
+import org.apache.http.client.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import iedcs.resources.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,15 +54,29 @@ public class MainApp extends Application {
     	File sawyer = new File("resources/books/sawyer.txt");
     	/*------------------------*/
 
-		String url = "http://127.0.0.1:8000/books/get_book/";
-		String param1 = pop.toString();
+        String url = "http://127.0.0.1:8000/books/get_book/";
+        String param1 = pop.toString();
 		String query = "book_id="+ param1;
 
-		URLConnection connection = new URL(url + "?" + query).openConnection();
-		InputStream response = connection.getInputStream();
+        HttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(url + "?" + query);
 
-		String result = getStringFromInputStream(response);
-		JsonObject items = Json.parse(result).asObject();
+		HttpResponse response = client.execute(request);
+
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " +
+                       response.getStatusLine().getStatusCode());
+
+		BufferedReader rd = new BufferedReader(
+                       new InputStreamReader(response.getEntity().getContent()));
+
+		StringBuffer result = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			result.append(line);
+		}
+
+		JsonObject items = Json.parse(result.toString()).asObject();
 
 		System.out.println(items.get("title").asString());
 
@@ -70,18 +90,35 @@ public class MainApp extends Application {
 
 
 
+
 	}
 
 	public Stack<Integer> getUserBooksIds(String email) throws MalformedURLException, IOException{
+
 		Stack<Integer> lifo = new Stack<Integer>();
 		String url = "http://127.0.0.1:8000/users/get_purchases/";
 		String param1 = email;
 		String query = "user="+ param1;
 
-		URLConnection connection = new URL(url + "?" + query).openConnection();
-		InputStream response = connection.getInputStream();
+        HttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(url + "?" + query);
 
-		String result = getStringFromInputStream(response);
+		HttpResponse response = client.execute(request);
+
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " +
+                       response.getStatusLine().getStatusCode());
+
+		BufferedReader rd = new BufferedReader(
+                       new InputStreamReader(response.getEntity().getContent()));
+
+		StringBuffer buffer = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			buffer.append(line);
+		}
+
+		String result = buffer.toString();
 		result = "{\"items\": " + result+"}";
 
 		JsonArray items = Json.parse(result).asObject().get("items").asArray();
@@ -136,13 +173,13 @@ public class MainApp extends Application {
      */
     public void showBooksOverview(String email) {
         try {
-        	
+
         	Stack<Integer> books = getUserBooksIds(email);
         	while ( !books.empty() )
             {
         		getUserBooksInfo(books.pop());
             }
-        	
+
             // Load book overview.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/BooksOverview.fxml"));
