@@ -1,4 +1,3 @@
-import os
 import json
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -39,7 +38,28 @@ def read_book(request):
     if len(p) == 0:
         return HttpResponse("User hasn't bought the book", status=status.HTTP_403_FORBIDDEN)
 
-    return HttpResponse("", status=status.HTTP_200_OK)
+
+    restrictions = {
+                    "device_key":"",
+                    "player_key":"",
+                    "location":"",
+                    "so":"",
+                    "time":"",
+                    }
+
+    return HttpResponse(json.dumps(restrictions), status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def validate(request):
+    #TODO
+    pass
+
+
+@api_view(['POST'])
+def decrypt(request):
+    #TODO
+    pass
 
 
 
