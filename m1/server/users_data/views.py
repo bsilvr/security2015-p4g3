@@ -166,10 +166,9 @@ def register_device(request):
 
     if len(d):
         d = d[0]
-
-    for u in d.user.all():
-        if u.email == email:
-            return HttpResponse("Device key already linked to that user", status=status.HTTP_400_BAD_REQUEST)
+        for u in d.user.all():
+            if u.email == email:
+                return HttpResponse("Device key already linked to that user", status=status.HTTP_400_BAD_REQUEST)
 
 
     device = Devices(device_key=device_key, device_name=device_name)
