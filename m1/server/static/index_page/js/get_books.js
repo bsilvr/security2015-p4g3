@@ -23,6 +23,7 @@ function get_purchases(){
       dataType: "json",
       success: savePurchases
     });
+
 }
 
 function saveArray(array){

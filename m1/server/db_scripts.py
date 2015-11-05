@@ -23,6 +23,7 @@ c1 = Countries(country="PT")
 
 c1.save()
 
+
 so1 = OperatingSystem(so="Mac OS X")
 so2 = OperatingSystem(so="Windows 10")
 so3 = OperatingSystem(so="Windows 8")

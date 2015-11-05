@@ -1,4 +1,6 @@
 import json
+from Crypto.Cipher import AES
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
@@ -52,14 +54,18 @@ def read_book(request):
 
 @api_view(['POST'])
 def validate(request):
-    #TODO
     pass
 
 
+# code adapted from http://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
 @api_view(['POST'])
 def decrypt(request):
-    #TODO
-    pass
+    keys = request.POST.get('key')
+
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
+
+
 
 
 
