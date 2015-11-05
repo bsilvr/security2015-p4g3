@@ -1,4 +1,6 @@
 from books.models import Book
+from restrictions.models import Countries, OperatingSystem
+
 
 b0 = Book(author="Elliot, Frances", title="Old Court Life in Spain", language="English", cover="http://i.imgur.com/DIvCaPV.jpg", ebook_id=49941)
 
@@ -15,3 +17,20 @@ b1.save()
 b2.save()
 b3.save()
 b4.save()
+
+
+c1 = Countries(country="PT")
+
+c1.save()
+
+so1 = OperatingSystem(so="Mac OS X")
+so2 = OperatingSystem(so="Windows 10")
+so3 = OperatingSystem(so="Windows 8")
+so4 = OperatingSystem(so="Windows 7")
+so5 = OperatingSystem(so="Linux")
+
+so1.save()
+so2.save()
+so3.save()
+so4.save()
+so5.save()
