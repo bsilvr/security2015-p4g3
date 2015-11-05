@@ -1,21 +1,27 @@
 package iedcs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.http.*;
 import org.apache.http.client.*;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.resources.*;
+import iedcs.resources.JsonParser.Json;
+import iedcs.resources.JsonParser.JsonArray;
+import iedcs.resources.JsonParser.JsonObject;
+import iedcs.resources.JsonParser.JsonValue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
 import iedcs.view.BookReaderController;
@@ -63,10 +69,6 @@ public class MainApp extends Application {
 
 		HttpResponse response = client.execute(request);
 
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " +
-                       response.getStatusLine().getStatusCode());
-
 		BufferedReader rd = new BufferedReader(
                        new InputStreamReader(response.getEntity().getContent()));
 
@@ -96,35 +98,37 @@ public class MainApp extends Application {
 	public Stack<Integer> getUserBooksIds(String email) throws MalformedURLException, IOException{
 
 		Stack<Integer> lifo = new Stack<Integer>();
+
 		String url = "http://127.0.0.1:8000/users/get_purchases/";
-		String param1 = email;
-		String query = "user="+ param1;
 
-        HttpClient client = HttpClientBuilder.create().build();
-		HttpGet request = new HttpGet(url + "?" + query);
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(url);
 
-		HttpResponse response = client.execute(request);
 
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " +
-                       response.getStatusLine().getStatusCode());
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("user", email));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response = client.execute(post);
 
 		BufferedReader rd = new BufferedReader(
-                       new InputStreamReader(response.getEntity().getContent()));
+                        new InputStreamReader(response.getEntity().getContent()));
 
-		StringBuffer buffer = new StringBuffer();
+		StringBuffer userBooks = new StringBuffer();
 		String line = "";
 		while ((line = rd.readLine()) != null) {
-			buffer.append(line);
+			userBooks.append(line);
 		}
 
-		String result = buffer.toString();
+		String result = userBooks.toString();
 		result = "{\"items\": " + result+"}";
 
-		JsonArray items = Json.parse(result).asObject().get("items").asArray();
+		JsonArray items = Json.parse(result.toString()).asObject().get("items").asArray();
 		for (JsonValue item : items) {
 		  lifo.push(item.asObject().getInt("book_id", 0));
 		}
+
 		return lifo;
 	}
 
@@ -271,45 +275,21 @@ public class MainApp extends Application {
     }
 
 	public static void main(String[] args) throws IOException {
-		/*System.getProperties().list(System.out);
-
-		URL whatismyip = new URL("http://checkip.amazonaws.com");
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-		                whatismyip.openStream()));
-
-		String ip = in.readLine(); //you get the IP as a String
-		System.out.println(ip);*/
-
-		launch(args);
-	}
-
-	private static String getStringFromInputStream(InputStream is) {
-
-		BufferedReader br = null;
-		StringBuilder sb = new StringBuilder();
-
-		String line;
-		try {
-
-			br = new BufferedReader(new InputStreamReader(is));
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		
+		if (System.getProperties().getProperty("os.name").contains("Mac")) {
+			System.out.print(SNMac.getSerialNumber().getBytes().length);
+	    }
+		else if (System.getProperties().getProperty("os.name").contains("Windows")) {
+			System.out.print(SNWindows.getSerialNumber());
+	    }
+		else if (System.getProperties().getProperty("os.name").contains("Linux")) {
+			System.out.print(SNUnix.getSerialNumber());
+	    }
+		else{
+			System.exit(0);
 		}
 
-		return sb.toString();
-
+		launch(args);
 	}
 
 }
