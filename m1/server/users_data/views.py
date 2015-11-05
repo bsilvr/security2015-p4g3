@@ -97,31 +97,24 @@ def user_logout(request):
 
 @api_view(['POST'])
 def buy_book(request):
-    template = 'index.html'
-    email = request.POST['email']
-    email = email[1:-1]
-
     book_id = request.POST['book_id']
 
     book = Book.objects.get(ebook_id=book_id)
+
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
 
     if book is None:
         return Response("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
 
 
-    user = User.objects.get(email=email)
-
-    if user is None:
-        return Response("User doesn't exists", status=status.HTTP_400_BAD_REQUEST)
-
-
     random = os.urandom(128)
 
-    purchase = Purchases(user=user, book_id=book, random=random)
+    purchase = Purchases(user=request.user, book_id=book, random=random)
 
     purchase.save()
 
-    return render(request, template)
+    return HttpResponse("Success", status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
