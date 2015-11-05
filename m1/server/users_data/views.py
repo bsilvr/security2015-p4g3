@@ -69,7 +69,6 @@ def user_login(request):
     email = request.POST['email']
     password = request.POST['password']
     user = authenticate(username=email, password=password)
-    template = 'index.html'
 
     if user is not None:
         if user.is_active:
@@ -87,7 +86,6 @@ def user_login(request):
 
 @api_view(['POST'])
 def user_logout(request):
-    template = 'index.html'
     logout(request)
     response = redirect('/')
     response.set_cookie(key='fname', value="")
@@ -126,9 +124,9 @@ def buy_book(request):
     return render(request, template)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_purchases(request):
-    email = request.GET.get('user')
+    email = request.POST.get('user')
 
     if email == "" or email is None:
         return Response('Email was empty', status=status.HTTP_400_BAD_REQUEST)
@@ -142,3 +140,34 @@ def get_purchases(request):
         j.append(p)
 
     return HttpResponse(json.dumps(j), status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def register_device(request):
+    email = request.POST.get('user')
+    device_key = request.POST.get('device_key')
+    device_name = request.POST.get('user')
+
+    if device_key==None or device_key=="":
+        return HttpResponse("Invalid device key", status=status.HTTP_400_BAD_REQUEST)
+
+    if email==None or email=="":
+        return HttpResponse("Invalid email", status=status.HTTP_400_BAD_REQUEST)
+
+    if device_name==None or device_name=="":
+        device_name = email + "'s Computer"
+
+    user = User.objects.get(email=email)
+
+    if user==None:
+        return HttpResponse("Invalid User", status=status.HTTP_400_BAD_REQUEST)
+
+
+    device = Devices(user=user, device_key=device_key, device_name=device_name)
+
+    device.save()
+
+    return HttpResponse("Device added successfully", status=status.HTTP_200_OK)
+
+
+

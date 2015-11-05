@@ -17,12 +17,11 @@ function get_purchases(){
     email = email.replace(/"/g,"");
 
     $.ajax({
-      type: "GET",
-      url: "/users/get_purchases/?user=" + email,
+      type: "POST",
+      url: "/users/get_purchases/",
+      data : {csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value, "user": email},
       dataType: "json",
-      success: savePurchases,
-      error: function (xhr, status, err) {
-      }
+      success: savePurchases
     });
 }
 
