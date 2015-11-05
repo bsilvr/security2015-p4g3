@@ -146,7 +146,7 @@ def get_purchases(request):
 def register_device(request):
     email = request.POST.get('user')
     device_key = request.POST.get('device_key')
-    device_name = request.POST.get('user')
+    device_name = request.POST.get('device_name')
 
     if device_key==None or device_key=="":
         return HttpResponse("Invalid device key", status=status.HTTP_400_BAD_REQUEST)
@@ -154,18 +154,29 @@ def register_device(request):
     if email==None or email=="":
         return HttpResponse("Invalid email", status=status.HTTP_400_BAD_REQUEST)
 
-    if device_name==None or device_name=="":
-        device_name = email + "'s Computer"
-
     user = User.objects.get(email=email)
 
     if user==None:
         return HttpResponse("Invalid User", status=status.HTTP_400_BAD_REQUEST)
 
+    if device_name==None or device_name=="":
+        device_name = user.first_name + "'s Computer"
 
-    device = Devices(user=user, device_key=device_key, device_name=device_name)
+    d = Devices.objects.all().filter(device_key=device_key)
+
+    d = d[0]
+
+    for u in d.user.all():
+        print u
+        if u.email == email:
+            return HttpResponse("Device key already linked to that user", status=status.HTTP_400_BAD_REQUEST)
+
+
+    device = Devices(device_key=device_key, device_name=device_name)
 
     device.save()
+
+    device.user.add(user)
 
     return HttpResponse("Device added successfully", status=status.HTTP_200_OK)
 
