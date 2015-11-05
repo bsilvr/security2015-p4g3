@@ -14,6 +14,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
+import iedcs.resources.SNMac;
+import iedcs.resources.SNUnix;
+import iedcs.resources.SNWindows;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -67,6 +70,21 @@ public class LoginController {
      */
     @FXML
     private void handleLogin() throws ClientProtocolException, IOException {
+    	System.out.print(System.getProperties().getProperty("os.name"));
+    	if (System.getProperties().getProperty("os.name").contains("Mac")) {
+			String SN = SNMac.getSerialNumber();
+			System.out.print(SN.substring(Math.max(SN.length() - 8, 0)));
+	    }
+		if (System.getProperties().getProperty("os.name").contains("Windows")) {
+			System.out.print(SNWindows.getSerialNumber());
+	    }
+		if (System.getProperties().getProperty("os.name").contains("Linux")) {
+			System.out.print(SNUnix.getSerialNumber());
+	    }
+		else{
+			System.exit(0);
+		}
+    	
     	String url = "http://127.0.0.1:8000/users/login/";
 
 		HttpClient client = HttpClientBuilder.create().build();

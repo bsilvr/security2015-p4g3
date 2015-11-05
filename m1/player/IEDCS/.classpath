@@ -13,5 +13,7 @@
 	<classpathentry kind="lib" path="httpmime-4.5.1.jar"/>
 	<classpathentry kind="lib" path="jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="geoip2-2.3.1.jar"/>
+	<classpathentry kind="lib" path="geoip-api-1.2.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

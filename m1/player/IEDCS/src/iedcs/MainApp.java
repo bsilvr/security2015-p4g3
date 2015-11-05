@@ -12,16 +12,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.resources.*;
-import iedcs.resources.JsonParser.Json;
-import iedcs.resources.JsonParser.JsonArray;
-import iedcs.resources.JsonParser.JsonObject;
-import iedcs.resources.JsonParser.JsonValue;
+import iedcs.resources.JsonParser.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
+
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
 import iedcs.view.BookReaderController;
@@ -275,20 +274,23 @@ public class MainApp extends Application {
     }
 
 	public static void main(String[] args) throws IOException {
-		
-		if (System.getProperties().getProperty("os.name").contains("Mac")) {
-			System.out.print(SNMac.getSerialNumber().getBytes().length);
-	    }
-		else if (System.getProperties().getProperty("os.name").contains("Windows")) {
-			System.out.print(SNWindows.getSerialNumber());
-	    }
-		else if (System.getProperties().getProperty("os.name").contains("Linux")) {
-			System.out.print(SNUnix.getSerialNumber());
-	    }
-		else{
-			System.exit(0);
-		}
+		URL whatismyip = new URL("http://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
 
+		String ip = in.readLine();
+		System.out.print(ip);
+		try {
+			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
+
+		    System.out.println(cl.getCountry(ip).getCode());
+		    System.out.println(cl.getCountry(ip).getName());
+		    
+
+		    cl.close();
+		}
+		catch (IOException e) {
+		    System.out.println("IO Exception");
+		}
 		launch(args);
 	}
 
