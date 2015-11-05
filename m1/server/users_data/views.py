@@ -164,7 +164,8 @@ def register_device(request):
 
     d = Devices.objects.all().filter(device_key=device_key)
 
-    d = d[0]
+    if len(d):
+        d = d[0]
 
     for u in d.user.all():
         if u.email == email:
