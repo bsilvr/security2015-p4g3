@@ -6,8 +6,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import iedcs.MainApp;
 import iedcs.model.Book;
+import iedcs.resources.Location.LookupService;
 
 public class BookOverviewController {
 
@@ -110,9 +119,32 @@ public class BookOverviewController {
 
     /**
      * Called when the user clicks on the read button.
+     * @throws IOException
      */
     @FXML
-    private void handleReadBook() {
+    private void handleReadBook() throws IOException {
+
+    	System.out.println(System.getProperties().getProperty("os.name"));
+
+		Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        System.out.println( sdf.format(cal.getTime()) );
+
+		URL whatismyip = new URL("http://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+
+		String ip = in.readLine();
+		try {
+			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
+
+		    System.out.println(cl.getCountry(ip).getCode());
+
+		    cl.close();
+		}
+		catch (IOException e) {
+		    System.out.println("IO Exception");
+		}
+
 
     	mainApp.showBookReader(currentBook);
     }

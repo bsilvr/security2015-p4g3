@@ -12,16 +12,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.resources.JsonParser.*;
-import iedcs.resources.Location.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
-
 import iedcs.model.Book;
 import iedcs.view.BookOverviewController;
 import iedcs.view.BookReaderController;
@@ -80,8 +75,6 @@ public class MainApp extends Application {
 
 		JsonObject items = Json.parse(result.toString()).asObject();
 
-		System.out.println(items.get("title").asString());
-
 		String author = items.get("author").asString();
 		String title = items.get("title").asString();
 		String language = items.get("language").asString();
@@ -123,7 +116,6 @@ public class MainApp extends Application {
 
 		String result = userBooks.toString();
 		result = "{\"items\": " + result+"}";
-		System.out.println(result);
 
 		JsonArray items = Json.parse(result.toString()).asObject().get("items").asArray();
 		for (JsonValue item : items) {
@@ -276,27 +268,7 @@ public class MainApp extends Application {
     }
 
 	public static void main(String[] args) throws IOException {
-		URL whatismyip = new URL("http://checkip.amazonaws.com");
-		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
 
-		String ip = in.readLine();
-		System.out.println(ip);
-		try {
-			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
-
-		    System.out.println(cl.getCountry(ip).getCode());
-		    System.out.println(cl.getCountry(ip).getName());
-
-
-		    cl.close();
-		}
-		catch (IOException e) {
-		    System.out.println("IO Exception");
-		}
-
-		InetAddress addr;
-	    addr = InetAddress.getLocalHost();
-	    System.out.println(addr.getHostName());
 		launch(args);
 	}
 
