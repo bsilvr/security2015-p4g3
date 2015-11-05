@@ -8,7 +8,6 @@ from player.models import Player
 class User_key(models.Model):
     user = models.OneToOneField(User, primary_key=True)
     user_key = models.BinaryField(max_length=128)
-    player_used = models.ForeignKey(Player, null=True)
 
 class Devices(models.Model):
     user = models.ManyToManyField(User)

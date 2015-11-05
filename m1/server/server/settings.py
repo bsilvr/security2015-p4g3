@@ -40,7 +40,10 @@ INSTALLED_APPS = (
     'rest_framework',
     'books',
     'player',
-    'users_data'
+    'users_data',
+    'restrictions',
+    'client_requests'
+
 )
 
 MIDDLEWARE_CLASSES = (
