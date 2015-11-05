@@ -19,6 +19,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from server import views, settings
 from books import urls as books_urls
 from users_data import urls as users_urls
+from client_requests import urls as client_requests_urls
 
 
 urlpatterns = [
@@ -28,6 +29,8 @@ urlpatterns = [
 
     url(r'^books/', include(books_urls)),
     url(r'^users/', include(users_urls)),
+    url(r'^requests/', include(client_requests_urls)),
+
 
 
 
