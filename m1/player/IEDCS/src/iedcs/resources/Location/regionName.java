@@ -1,4 +1,4 @@
-package iedcs.resources;
+package iedcs.resources.Location;
 // generated automatically from admin/generate_regionName.pl
 public class regionName {
     public static String regionNameByCode(String country_code, String region_code) {

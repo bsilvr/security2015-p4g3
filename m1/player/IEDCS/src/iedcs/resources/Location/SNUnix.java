@@ -1,4 +1,4 @@
-package iedcs.resources;
+package iedcs.resources.Location;
 
 import java.io.BufferedReader;
 import java.io.IOException;

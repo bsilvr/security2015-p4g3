@@ -1,4 +1,4 @@
-package iedcs.resources;
+package iedcs.resources.Location;
 public class Region {
 	public String countryCode;
 	public String countryName;
