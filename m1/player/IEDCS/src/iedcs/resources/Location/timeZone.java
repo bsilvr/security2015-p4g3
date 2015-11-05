@@ -1,4 +1,4 @@
-package iedcs.resources;
+package iedcs.resources.Location;
 // generated automatically from admin/generate_timeZone.pl
 public class timeZone {
     public static String timeZoneByCountryAndRegion(String country, String region) {

@@ -11,13 +11,14 @@ import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
-import iedcs.resources.*;
 import iedcs.resources.JsonParser.*;
+import iedcs.resources.Location.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -122,6 +123,7 @@ public class MainApp extends Application {
 
 		String result = userBooks.toString();
 		result = "{\"items\": " + result+"}";
+		System.out.println(result);
 
 		JsonArray items = Json.parse(result.toString()).asObject().get("items").asArray();
 		for (JsonValue item : items) {
@@ -278,19 +280,23 @@ public class MainApp extends Application {
 		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
 
 		String ip = in.readLine();
-		System.out.print(ip);
+		System.out.println(ip);
 		try {
 			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
 
 		    System.out.println(cl.getCountry(ip).getCode());
 		    System.out.println(cl.getCountry(ip).getName());
-		    
+
 
 		    cl.close();
 		}
 		catch (IOException e) {
 		    System.out.println("IO Exception");
 		}
+
+		InetAddress addr;
+	    addr = InetAddress.getLocalHost();
+	    System.out.println(addr.getHostName());
 		launch(args);
 	}
 

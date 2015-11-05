@@ -2,7 +2,6 @@ import os
 import json
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from users_data.models import User_key, Purchases, Devices
@@ -23,6 +22,9 @@ def read_book(request):
     # if user==None:
     #     return HttpResponse("User doesn't exist", status=status.HTTP_400_BAD_REQUEST)
 
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
+
 
     if book_id==None or book_id=="":
         return HttpResponse("Invalid book_id", status=status.HTTP_400_BAD_REQUEST)
@@ -30,8 +32,16 @@ def read_book(request):
     book = Book.objects.get(ebook_id=book_id)
 
     if book is None:
-        return Response("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
+        return HttpResponse("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
 
-    
+    p = Purchases.objects.all().filter(user=request.user, book_id=book)
+
+    if len(p) == 0:
+        return HttpResponse("User hasn't bought the book", status=status.HTTP_403_FORBIDDEN)
+
+    return HttpResponse("", status=status.HTTP_200_OK)
+
+
+
 
 

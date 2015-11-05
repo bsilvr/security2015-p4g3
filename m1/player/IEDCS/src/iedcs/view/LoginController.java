@@ -1,6 +1,7 @@
 package iedcs.view;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
-import iedcs.resources.SNMac;
-import iedcs.resources.SNUnix;
-import iedcs.resources.SNWindows;
+import iedcs.resources.Location.SNMac;
+import iedcs.resources.Location.SNUnix;
+import iedcs.resources.Location.SNWindows;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -63,6 +64,40 @@ public class LoginController {
         this.mainApp = mainApp;
     }
 
+    public void sendDeviceKey() throws ClientProtocolException, IOException {
+    	String SN="";
+
+    	if (System.getProperties().getProperty("os.name").contains("Mac")) {
+			SN = SNMac.getSerialNumber();
+			SN = SN.substring(Math.max(SN.length() - 8, 0));
+	    }
+    	else if (System.getProperties().getProperty("os.name").contains("Windows")) {
+			SN = SNWindows.getSerialNumber();
+			SN = SN.substring(Math.max(SN.length() - 8, 0));
+	    }
+    	else if (System.getProperties().getProperty("os.name").contains("Linux")) {
+			SN = SNUnix.getSerialNumber();
+			SN = SN.substring(Math.max(SN.length() - 8, 0));
+	    }
+		else{
+			System.exit(0);
+		}
+
+    	String url = "http://127.0.0.1:8000/users/register_device/";
+
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(url);
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("user", email.getText()));
+		urlParameters.add(new BasicNameValuePair("device_key", SN));
+		urlParameters.add(new BasicNameValuePair("device_name", ""));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		client.execute(post);
+    }
+
     /**
      * Called when the user clicks on the read button.
      * @throws IOException
@@ -70,21 +105,8 @@ public class LoginController {
      */
     @FXML
     private void handleLogin() throws ClientProtocolException, IOException {
-    	System.out.print(System.getProperties().getProperty("os.name"));
-    	if (System.getProperties().getProperty("os.name").contains("Mac")) {
-			String SN = SNMac.getSerialNumber();
-			System.out.print(SN.substring(Math.max(SN.length() - 8, 0)));
-	    }
-		if (System.getProperties().getProperty("os.name").contains("Windows")) {
-			System.out.print(SNWindows.getSerialNumber());
-	    }
-		if (System.getProperties().getProperty("os.name").contains("Linux")) {
-			System.out.print(SNUnix.getSerialNumber());
-	    }
-		else{
-			System.exit(0);
-		}
-    	
+
+
     	String url = "http://127.0.0.1:8000/users/login/";
 
 		HttpClient client = HttpClientBuilder.create().build();
@@ -99,6 +121,7 @@ public class LoginController {
 		HttpResponse response = client.execute(post);
 
 		if(response.getStatusLine().getStatusCode()==302){
+			//sendDeviceKey();
 			mainApp.showBooksOverview(email.getText());
 	    }
 		else{
