@@ -60,12 +60,19 @@ def validate(request):
 # code adapted from http://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
 @api_view(['POST'])
 def decrypt(request):
-    keys = request.POST.get('key')
+    key = request.POST.get('key')
 
     if not request.user.is_authenticated():
         return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
 
 
+    user_key = request.user.user_key.user_key
+    print user_key
+
+    IV = ""
+
+    aes = AES.new(user_key, AES.MODE_CFB, IV)
+    aes.encrypt(key)
 
 
 
