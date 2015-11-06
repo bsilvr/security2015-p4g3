@@ -194,7 +194,6 @@ def get_file(request):
     return HttpResponse(open(file_path, 'rb').read(), content_type='text/plain', status=status.HTTP_200_OK)
 
 
-
 @api_view(['POST'])
 def decrypt(request):
     key = request.POST.get('key')
@@ -211,9 +210,3 @@ def decrypt(request):
     encryptedKey = aes.encrypt(key)
 
     return HttpResponse(encryptedKey, status=status.HTTP_200_OK)
-
-
-
-
-
-
