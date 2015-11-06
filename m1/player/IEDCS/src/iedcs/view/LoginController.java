@@ -126,13 +126,13 @@ public class LoginController {
 //		setCookies(response.getFirstHeader("Set-Cookie") == null ? "" :
 //			response.getFirstHeader("Set-Cookie").toString());
 //		System.out.println(cookies);
-		Header[] cookies =  response.getHeaders("Set-Cookie");
+//		Header[] cookies =  response.getHeaders("Set-Cookie");
 
-		cookie += cookies[1].getValue().substring(0, cookies[1].getValue().indexOf(";")) + "; "
-				+ cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));
-		System.out.print(cookie);
-
-		setCookies(cookie);
+//		cookie += cookies[1].getValue().substring(0, cookies[1].getValue().indexOf(";")) + "; "
+//				+ cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));
+//		System.out.print(cookie);
+//
+//		setCookies(cookie);
 		if(response.getStatusLine().getStatusCode()==302){
 			sendDeviceKey();
 			mainApp.showBooksOverview(email.getText());
