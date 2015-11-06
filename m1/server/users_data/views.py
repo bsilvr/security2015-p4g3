@@ -43,7 +43,7 @@ def create_user(request):
 
     user.save()
 
-    user_key = os.urandom(128)
+    user_key = os.urandom(16)
 
     user_extra_info = User_key(user=user, user_key=user_key)
 
@@ -108,7 +108,7 @@ def buy_book(request):
         return Response("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
 
 
-    random = os.urandom(128)
+    random = os.urandom(16)
 
     purchase = Purchases(user=request.user, book_id=book, random=random)
 

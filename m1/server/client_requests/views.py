@@ -1,13 +1,15 @@
 import json
+import os
+import tempfile
 from Crypto.Cipher import AES
 
 from rest_framework import status
 from rest_framework.decorators import api_view
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from users_data.models import User_key, Purchases, Devices
 from books.models import Book
 from player.models import Player
+from restrictions.models import *
 
 
 @api_view(['POST'])
@@ -42,6 +44,7 @@ def read_book(request):
 
 
     restrictions = {
+                    "book_id":"",
                     "device_key":"",
                     "player_key":"",
                     "location":"",
@@ -52,12 +55,146 @@ def read_book(request):
     return HttpResponse(json.dumps(restrictions), status=status.HTTP_200_OK)
 
 
+# consulted code from: http://eli.thegreenplace.net/2010/06/25/aes-encryption-of-files-in-python-with-pycrypto
+# consulted code from http://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
+
 @api_view(['POST'])
 def validate(request):
-    pass
+    book_id = request.POST.get('book_id')
+    device_key = request.POST.get('device_key')
+    player_key = request.POST.get('player_key')
+    location = request.POST.get('location')
+    so = request.POST.get('so')
+    time = request.POST.get('time')
+
+    # Validating reading restrictions
+
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
 
 
-# code adapted from http://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
+    if book_id==None or book_id=="":
+        return HttpResponse("Invalid book_id", status=status.HTTP_400_BAD_REQUEST)
+
+    book = Book.objects.get(ebook_id=book_id)
+
+    if book is None:
+        return HttpResponse("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
+
+
+    if device_key==None or device_key=="":
+        return HttpResponse("Invalid device key", status=status.HTTP_400_BAD_REQUEST)
+
+    device = Devices.objects.get(device_key=device_key)
+
+    if device is None:
+        return HttpResponse("Device is not registered", status=status.HTTP_400_BAD_REQUEST)
+
+
+    if player_key==None or player_key=="":
+        return HttpResponse("Invalid player key", status=status.HTTP_400_BAD_REQUEST)
+
+    player = Player.objects.get(player_key=player_key)
+
+    if player is None:
+        return HttpResponse("Player doesn't exist", status=status.HTTP_400_BAD_REQUEST)
+
+
+    if location==None or location=="":
+        return HttpResponse("Invalid location", status=status.HTTP_400_BAD_REQUEST)
+
+    country = Countries.objects.get(country=location)
+
+    if country is None:
+        return HttpResponse("User not allowed to read the book in the country he's in", status=status.HTTP_403_FORBIDDEN)
+
+
+    if so==None or so=="":
+        return HttpResponse("Invalid operating system", status=status.HTTP_400_BAD_REQUEST)
+
+    system = OperatingSystem.objects.get(so=so)
+
+    if system is None:
+        return HttpResponse("User not allowed to read the book with his operating system", status=status.HTTP_403_FORBIDDEN)
+
+
+    if time==None or time=="" or len(time.split(':')) != 3:
+        return HttpResponse("Invalid time", status=status.HTTP_400_BAD_REQUEST)
+
+    hour = time.split(':')[0]
+
+    if hour < 8 or hour > 20:
+        return HttpResponse("User not allowed to read the book at this time", status=status.HTTP_403_FORBIDDEN)
+
+    # End of validating reading restrictions
+
+    # Ciphering the book for the user
+
+    random = Purchases.objects.all().filter(user=request.user, book_id=book)[0].random
+    user_key = request.user.user_key.user_key
+
+    IV = 'oObVMqPyzcRzWvyB'
+
+    # cipher random with player key
+    aes = AES.new(player_key, AES.MODE_CFB, IV)
+    key1 = aes.encrypt(random)
+
+    # cipher previous key with user_key
+    aes = AES.new(user_key, AES.MODE_CFB, IV)
+    key2 = aes.encrypt(key1)
+
+    # cipher previous key with device_key
+    aes = AES.new(device_key, AES.MODE_CFB, IV)
+    file_key = aes.encrypt(key2)
+
+    # end result is cipher(device_key, cipher(user_key, cipher(player_key, random)))
+
+    # starting to cipher file using file key
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    file_path = os.path.join(BASE_DIR, book.text_file)
+    cipher_file_path = file_path.replace("books", "cipher_books")
+
+    with open(file_path, 'rb') as book_file:
+        with open(cipher_file_path, 'w+') as cipher_file:
+            block_size = 64
+            bytes_read = 0
+            file_length = os.path.getsize(file_path)
+
+            aes = AES.new(file_key, AES.MODE_CFB, IV)
+            while bytes_read < file_length:
+                block = book_file.read(block_size)
+                bytes_read += block_size
+
+                ciphered_block = aes.encrypt(block)
+
+                cipher_file.write(ciphered_block)
+
+            cipher_file.seek(0)
+
+    j = {
+        "random": random,
+        "file_path": cipher_file_path
+        }
+
+    return HttpResponse(json.dumps(j), status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def get_file(request):
+    file_path = request.POST.get("file_path")
+
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
+
+    if file_path == None or file_path == "":
+        return HttpResponse("Invalid File Path", status=status.HTTP_400_BAD_REQUEST)
+
+    return HttpResponse(open(file_path, 'rb').read(), content_type='text/plain', status=status.HTTP_200_OK)
+
+
+
 @api_view(['POST'])
 def decrypt(request):
     key = request.POST.get('key')
@@ -67,12 +204,14 @@ def decrypt(request):
 
 
     user_key = request.user.user_key.user_key
-    print user_key
 
-    IV = ""
+    IV = 'oObVMqPyzcRzWvyB'
 
     aes = AES.new(user_key, AES.MODE_CFB, IV)
-    aes.encrypt(key)
+    encryptedKey = aes.encrypt(key)
+
+    return HttpResponse(encryptedKey, status=status.HTTP_200_OK)
+
 
 
 
