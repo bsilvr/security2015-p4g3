@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -26,6 +28,7 @@ import javafx.scene.control.TextField;
 
 public class LoginController {
 
+	private static String cookies;
 
     @FXML
     private TextField email;
@@ -107,6 +110,7 @@ public class LoginController {
 
 
     	String url = "http://127.0.0.1:8000/users/login/";
+    	String cookie="";
 
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
@@ -119,6 +123,16 @@ public class LoginController {
 
 		HttpResponse response = client.execute(post);
 
+//		setCookies(response.getFirstHeader("Set-Cookie") == null ? "" :
+//			response.getFirstHeader("Set-Cookie").toString());
+//		System.out.println(cookies);
+		Header[] cookies =  response.getHeaders("Set-Cookie");
+
+		cookie += cookies[1].getValue().substring(0, cookies[1].getValue().indexOf(";")) + "; "
+				+ cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));
+		System.out.print(cookie);
+
+		setCookies(cookie);
 		if(response.getStatusLine().getStatusCode()==302){
 			sendDeviceKey();
 			mainApp.showBooksOverview(email.getText());
@@ -131,4 +145,10 @@ public class LoginController {
 	        alert.showAndWait();
 		}
     }
+    public static  String getCookies() {
+    	return cookies;
+      }
+    public void setCookies(String cookies) {
+    	this.cookies = cookies;
+      }
 }
