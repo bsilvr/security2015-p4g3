@@ -3,7 +3,7 @@ import os
 
 def cipher():
     file_key="passwordpassword"
-    with open("original.txt", 'rb') as book_file:
+    with open("original.txt", 'rb+') as book_file:
             with open("cipher.txt", 'wrb') as cipher_file:
                 block_size = 64
                 bytes_read = 0
@@ -23,7 +23,7 @@ def cipher():
 
 def decipher():
     file_key="passwordpassword"
-    with open("cipher.txt", 'rb') as book_file:
+    with open("cipher.txt", 'rb+') as book_file:
             with open("after.txt", 'wrb') as cipher_file:
                 block_size = 64
                 bytes_read = 0

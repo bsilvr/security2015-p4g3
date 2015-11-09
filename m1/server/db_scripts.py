@@ -3,6 +3,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 
 from books.models import Book
 from restrictions.models import Countries, OperatingSystem
+from player.models import Player
 
 
 b0 = Book(author="Elliot, Frances", title="Old Court Life in Spain", language="English", cover="http://i.imgur.com/DIvCaPV.jpg", ebook_id=49941, text_file="media/books/pg49941.txt")
@@ -38,3 +39,7 @@ so2.save()
 so3.save()
 so4.save()
 so5.save()
+
+p0 = Player(player_key="kR5OjIhyGFLT7hSk")
+
+p0.save()
