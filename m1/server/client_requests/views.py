@@ -128,15 +128,15 @@ def validate(request):
 
 
     # cipher random with player key
-    aes = AES.new(player_key, AES.MODE_CFB, IV)
+    aes = AES.new(player_key, AES.MODE_CBC, IV)
     key1 = aes.encrypt(random)
 
     # cipher previous key with user_key
-    aes = AES.new(user_key, AES.MODE_CFB, IV)
+    aes = AES.new(user_key, AES.MODE_CBC, IV)
     key2 = aes.encrypt(key1)
 
     # cipher previous key with device_key
-    aes = AES.new(device_key, AES.MODE_CFB, IV)
+    aes = AES.new(device_key, AES.MODE_CBC, IV)
     file_key = aes.encrypt(key2)
 
     # end result is cipher(device_key, cipher(user_key, cipher(player_key, random)))
@@ -147,22 +147,25 @@ def validate(request):
 
     file_path = os.path.join(BASE_DIR, book.text_file)
     cipher_file_path = file_path.replace("books", "cipher_books")
+
     with open(file_path, 'rb') as book_file:
         with open(cipher_file_path, 'w+') as cipher_file:
             block_size = 16
             bytes_read = 0
-            file_length = os.path.getsize(file_path)
+            data = book_file.read()
+            length = 16 - (len(data) % 16)
+            data += chr(length)*length
+            size = len(data)
 
-            aes = AES.new(file_key, AES.MODE_CFB, IV)
-            while bytes_read < file_length:
-                block = book_file.read(block_size)
+            aes = AES.new(file_key, AES.MODE_CBC, IV)
+            while bytes_read < size:
+                block = data[0:block_size]
+                data = data[block_size:]
                 bytes_read += block_size
 
                 ciphered_block = aes.encrypt(block)
 
                 cipher_file.write(ciphered_block)
-
-            cipher_file.seek(0)
 
 
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
@@ -216,7 +219,7 @@ def decrypt(request):
 
     IV = 'oObVMqPyzcRzWvyB'
 
-    aes = AES.new(user_key, AES.MODE_CFB, IV)
+    aes = AES.new(user_key, AES.MODE_CBC, IV)
     encryptedKey = aes.encrypt(key)
 
     return HttpResponse(encryptedKey, status=status.HTTP_200_OK)
