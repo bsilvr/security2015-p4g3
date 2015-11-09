@@ -30,7 +30,7 @@ public class KeyManager {
 	}
 
 	public static String getDeviceKey(){
-		return deviceKey;
+		return deviceKey+"00000000";
 	}
 	public static String getPlayerKey(){
 		return playerKey;

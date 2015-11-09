@@ -60,7 +60,6 @@ def read_book(request):
 
 @api_view(['POST'])
 def validate(request):
-    print "aqui0"
     book_id = request.POST.get('book_id')
     device_key = request.POST.get('device_key')
     player_key = request.POST.get('player_key')
@@ -86,9 +85,9 @@ def validate(request):
     if device_key==None or device_key=="":
         return HttpResponse("Invalid device key", status=status.HTTP_400_BAD_REQUEST)
 
-    device = Devices.objects.all().filter(device_key=device_key)
+    device = Devices.objects.get(device_key=device_key)
 
-    if device is []:
+    if device is None:
         return HttpResponse("Device is not registered", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -123,9 +122,8 @@ def validate(request):
         return HttpResponse("Invalid time", status=status.HTTP_400_BAD_REQUEST)
 
     hour = time.split(':')[0]
-    print hour
 
-    if hour < 8 or hour > 20:
+    if int(hour) < 8 or int(hour) > 20:
         return HttpResponse("User not allowed to read the book at this time", status=status.HTTP_403_FORBIDDEN)
 
     # End of validating reading restrictions
@@ -136,6 +134,7 @@ def validate(request):
     user_key = request.user.user_key.user_key
 
     IV = 'oObVMqPyzcRzWvyB'
+
 
     # cipher random with player key
     aes = AES.new(player_key, AES.MODE_CFB, IV)
@@ -157,7 +156,6 @@ def validate(request):
 
     file_path = os.path.join(BASE_DIR, book.text_file)
     cipher_file_path = file_path.replace("books", "cipher_books")
-    print "AQUI 1"
     with open(file_path, 'rb') as book_file:
         with open(cipher_file_path, 'w+') as cipher_file:
             block_size = 64
@@ -166,7 +164,6 @@ def validate(request):
 
             aes = AES.new(file_key, AES.MODE_CFB, IV)
             while bytes_read < file_length:
-                print "AQUI"
                 block = book_file.read(block_size)
                 bytes_read += block_size
 
