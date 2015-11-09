@@ -117,9 +117,6 @@ public class LoginController {
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
 		Header[] cookies =  response.getHeaders("Set-Cookie");
-		for(int i=0; i< cookies.length; i++){
-			System.out.println(cookies[i].getValue());
-		}
 
 		cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 
