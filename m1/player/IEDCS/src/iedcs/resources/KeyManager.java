@@ -9,6 +9,7 @@ public class KeyManager {
 	private static String deviceKey = "";
 	private static String playerKey = "kR5OjIhyGFLT7hSk";
 	private static String IV = "oObVMqPyzcRzWvyB";
+	private static String random = "";
 
 	public static void createDeviveKey(){
 
@@ -29,6 +30,12 @@ public class KeyManager {
 		}
 	}
 
+	public static void setRandom(String randomStr){
+		random = randomStr;
+	}
+	public static String getRandom(){
+		return random;
+	}
 	public static String getDeviceKey(){
 		return deviceKey+"00000000";
 	}

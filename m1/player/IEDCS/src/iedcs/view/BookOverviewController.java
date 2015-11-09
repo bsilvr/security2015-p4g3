@@ -16,6 +16,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -135,41 +141,41 @@ public class BookOverviewController {
     @FXML
     private void handleReadBook() throws IOException {
 
- 		//sendReadRequest();
+ 		sendReadRequest();
  		sendRestrictions();
 
     	mainApp.showBookReader(currentBook);
     }
 
-//    public void sendReadRequest() throws UnsupportedOperationException, IOException{
-//    	String url = "http://127.0.0.1:8000/requests/read_book/";
-//
-//		HttpPost post = new HttpPost(url);
-//		String cookie = LoginController.getCookies();
-//
-//
-//		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-//		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
-//		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
-//
-//
-//		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-//
-//		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
-//
-//		BufferedReader rd1 = new BufferedReader(
-//                new InputStreamReader(response1.getEntity().getContent()));
-//
-//		StringBuffer userBooks1 = new StringBuffer();
-//		String line = "";
-//		while ((line = rd1.readLine()) != null) {
-//			userBooks1.append(line);
-//		}
-//
-//		String result1 = userBooks1.toString();
-//		System.out.println(result1);
-//
-//    }
+    public void sendReadRequest() throws UnsupportedOperationException, IOException{
+    	String url = "http://127.0.0.1:8000/requests/read_book/";
+
+		HttpPost post = new HttpPost(url);
+		String cookie = LoginController.getCookies();
+
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+
+		BufferedReader rd1 = new BufferedReader(
+                new InputStreamReader(response1.getEntity().getContent()));
+
+		StringBuffer userBooks1 = new StringBuffer();
+		String line = "";
+		while ((line = rd1.readLine()) != null) {
+			userBooks1.append(line);
+		}
+
+		String result1 = userBooks1.toString();
+		System.out.println(result1);
+
+    }
 
     public void sendRestrictions() throws UnsupportedOperationException, IOException{
     	/*Get location*/
@@ -193,7 +199,7 @@ public class BookOverviewController {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         /*Send Post*/
-    	String url1 = "http://127.0.0.1:8000/requests/read_book/";
+    	String url1 = "http://127.0.0.1:8000/requests/validate/";
 
 		HttpPost post1 = new HttpPost(url1);
 		String cookie1 = LoginController.getCookies();
@@ -223,8 +229,55 @@ public class BookOverviewController {
 
 		String result1 = userBooks1.toString();
 		System.out.println(result1);
+		Header HeaderRandom = response1.getFirstHeader("random");
+		KeyManager.setRandom(HeaderRandom.getValue());
+		System.out.println("key1 generated");
+		String encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
+		String decript = decrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), encript);
+		System.out.print(decript);
+
+
 
     }
+
+    public static String encrypt(String key, String initVector, String value) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            System.out.println("encrypted string: "
+                    + Base64.encodeBase64String(encrypted));
+
+            return Base64.encodeBase64String(encrypted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String decrypt(String key, String initVector, String encrypted) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+
+            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
 
 
 
