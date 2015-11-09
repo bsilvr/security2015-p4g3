@@ -135,10 +135,13 @@ public class LoginController {
 	        alert.showAndWait();
 		}
     }
-    public static String getCookies() {
-    	return cookies;
-      }
+
     public void setCookies(String cookies) {
     	LoginController.cookies = cookies;
       }
+
+	public static String getCookies() {
+		// TODO Auto-generated method stub
+		return cookies;
+	}
 }

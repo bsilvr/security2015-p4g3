@@ -10,14 +10,12 @@ import javafx.scene.image.ImageView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -146,7 +144,7 @@ public class BookOverviewController {
     	String url = "http://127.0.0.1:8000/requests/read_book/";
 
 		HttpPost post = new HttpPost(url);
-		String cookie =LoginController.getCookies();
+		String cookie = LoginController.getCookies();
 
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -182,10 +180,10 @@ public class BookOverviewController {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         /*Send Post*/
-    	String url = "http://127.0.0.1:8000/requests/validate";
+    	String url = "http://127.0.0.1:8000/requests/validate/";
 
 		HttpPost post = new HttpPost(url);
-		String cookie =LoginController.getCookies();
+		String cookie = LoginController.getCookies();
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
