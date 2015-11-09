@@ -193,14 +193,20 @@ def get_file(request):
     file_path = "media/cipher_books/pg" + book_id + ".txt"
     print file_path
 
-    cipher_content = open(file_path, 'rb').read()
+    cipher_file = open(file_path, 'rb')
+
+    cipher_content = cipher_file.read()
+
+    cipher_file.close()
+
+    os.remove(file_path)
 
     return HttpResponse(cipher_content, content_type='text/plain', status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 def decrypt(request):
-    key = request.POST.get('key')
+    key = request.META.get('HTTP_KEY')
 
     if not request.user.is_authenticated():
         return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
