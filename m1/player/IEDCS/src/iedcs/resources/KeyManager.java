@@ -10,7 +10,7 @@ public class KeyManager {
 	private static String playerKey = "kR5OjIhyGFLT7hSk";
 	private static String IV = "oObVMqPyzcRzWvyB";
 
-	public void createDeviveKey(){
+	public static void createDeviveKey(){
 
     	if (System.getProperties().getProperty("os.name").contains("Mac")) {
     		deviceKey = SNMac.getSerialNumber();

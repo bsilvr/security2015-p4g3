@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -135,7 +136,7 @@ public class BookOverviewController {
     private void handleReadBook() throws IOException {
 
  		sendReadRequest();
-		sendRestrictions();
+ 		sendRestrictions();
 
     	mainApp.showBookReader(currentBook);
     }
@@ -154,7 +155,19 @@ public class BookOverviewController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		Http_Client.getHttpClient().execute(post);
+		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+
+		BufferedReader rd1 = new BufferedReader(
+                new InputStreamReader(response1.getEntity().getContent()));
+
+		StringBuffer userBooks1 = new StringBuffer();
+		String line = "";
+		while ((line = rd1.readLine()) != null) {
+			userBooks1.append(line);
+		}
+
+		String result1 = userBooks1.toString();
+		System.out.println(result1);
 
     }
 
@@ -180,46 +193,36 @@ public class BookOverviewController {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         /*Send Post*/
-    	String url = "http://127.0.0.1:8000/requests/validate/";
+    	String url1 = "http://127.0.0.1:8000/requests/validate/";
 
-		HttpPost post = new HttpPost(url);
-		String cookie = LoginController.getCookies();
+		HttpPost post1 = new HttpPost(url1);
+		String cookie1 = LoginController.getCookies();
 
-		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
-		System.out.println("IO Exception1");
-		urlParameters.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
-		System.out.println("IO Exception2");
-		urlParameters.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
-		System.out.println("IO Exception3");
-		urlParameters.add(new BasicNameValuePair("location", location));
-		System.out.println("IO Exception4");
-		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
-		System.out.println("IO Exception5");
-		urlParameters.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
-		System.out.println("IO Exception6");
+		List<NameValuePair> urlParameters1 = new ArrayList<NameValuePair>();
+		urlParameters1.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
+		urlParameters1.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
+		urlParameters1.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
+		urlParameters1.add(new BasicNameValuePair("location", location));
+		urlParameters1.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		urlParameters1.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
+		System.out.println(sdf.format(cal.getTime()));
 
-		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
-		System.out.println("IO Exception7");
+		urlParameters1.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie1.substring(cookie1.indexOf("=")+1,cookie1.length())));
 
+		post1.setEntity(new UrlEncodedFormEntity(urlParameters1));
+		HttpResponse response1 = Http_Client.getHttpClient().execute(post1);
 
-		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-		System.out.println("IO Exception8");
-//		HttpResponse response =
-		Http_Client.getHttpClient().execute(post);
-		System.out.println("IO Exception9");
+		BufferedReader rd1 = new BufferedReader(
+                new InputStreamReader(response1.getEntity().getContent()));
 
-//		BufferedReader rd = new BufferedReader(
-//                new InputStreamReader(response.getEntity().getContent()));
-//
-//		StringBuffer userBooks = new StringBuffer();
-//		String line = "";
-//		while ((line = rd.readLine()) != null) {
-//			userBooks.append(line);
-//		}
-//
-//		String result = userBooks.toString();
-//		System.out.println(result);
+		StringBuffer userBooks1 = new StringBuffer();
+		String line = "";
+		while ((line = rd1.readLine()) != null) {
+			userBooks1.append(line);
+		}
+
+		String result1 = userBooks1.toString();
+		System.out.println(result1);
 
     }
 

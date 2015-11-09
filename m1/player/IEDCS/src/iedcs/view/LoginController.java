@@ -68,17 +68,30 @@ public class LoginController {
 
 
     	String url = "http://127.0.0.1:8000/users/register_device/";
-
+    	System.out.println(KeyManager.getDeviceKey());
 		HttpPost post = new HttpPost(url);
+		String cookie = LoginController.getCookies();
+
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		Http_Client.getHttpClient().execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
 
+		StringBuffer userBooks = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
+		}
+
+		String result = userBooks.toString();
+		System.out.println(result);
     }
 
     /**
@@ -89,7 +102,7 @@ public class LoginController {
     @FXML
     private void handleLogin() throws ClientProtocolException, IOException {
 
-
+    	KeyManager.createDeviveKey();
     	String url = "http://127.0.0.1:8000/users/login/";
     	String cookie="";
 
