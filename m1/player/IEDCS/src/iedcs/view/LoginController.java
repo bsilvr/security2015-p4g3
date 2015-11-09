@@ -16,9 +16,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
 import iedcs.resources.Http_Client;
-import iedcs.resources.Location.SNMac;
-import iedcs.resources.Location.SNUnix;
-import iedcs.resources.Location.SNWindows;
+import iedcs.resources.KeyManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -67,23 +65,7 @@ public class LoginController {
     }
 
     public void sendDeviceKey() throws ClientProtocolException, IOException {
-    	String SN="";
 
-    	if (System.getProperties().getProperty("os.name").contains("Mac")) {
-			SN = SNMac.getSerialNumber();
-			SN = SN.substring(Math.max(SN.length() - 8, 0));
-	    }
-    	else if (System.getProperties().getProperty("os.name").contains("Windows")) {
-			SN = SNWindows.getSerialNumber();
-			SN = SN.substring(Math.max(SN.length() - 8, 0));
-	    }
-    	else if (System.getProperties().getProperty("os.name").contains("Linux")) {
-			SN = SNUnix.getSerialNumber();
-			SN = SN.substring(Math.max(SN.length() - 8, 0));
-	    }
-		else{
-			System.exit(0);
-		}
 
     	String url = "http://127.0.0.1:8000/users/register_device/";
 
@@ -91,7 +73,7 @@ public class LoginController {
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
-		urlParameters.add(new BasicNameValuePair("device_key", SN));
+		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
@@ -157,6 +139,6 @@ public class LoginController {
     	return cookies;
       }
     public void setCookies(String cookies) {
-    	this.cookies = cookies;
+    	LoginController.cookies = cookies;
       }
 }

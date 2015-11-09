@@ -60,6 +60,7 @@ def read_book(request):
 
 @api_view(['POST'])
 def validate(request):
+    print "aqui0"
     book_id = request.POST.get('book_id')
     device_key = request.POST.get('device_key')
     player_key = request.POST.get('player_key')
@@ -155,7 +156,7 @@ def validate(request):
 
     file_path = os.path.join(BASE_DIR, book.text_file)
     cipher_file_path = file_path.replace("books", "cipher_books")
-
+    print "AQUI 1"
     with open(file_path, 'rb') as book_file:
         with open(cipher_file_path, 'w+') as cipher_file:
             block_size = 64
@@ -164,6 +165,7 @@ def validate(request):
 
             aes = AES.new(file_key, AES.MODE_CFB, IV)
             while bytes_read < file_length:
+                print "AQUI"
                 block = book_file.read(block_size)
                 bytes_read += block_size
 

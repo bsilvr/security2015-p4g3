@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import iedcs.MainApp;
 import iedcs.model.Book;
 import iedcs.view.LoginController;
 import iedcs.resources.Http_Client;
+import iedcs.resources.KeyManager;
 import iedcs.resources.Location.LookupService;
 
 public class BookOverviewController {
@@ -134,28 +136,14 @@ public class BookOverviewController {
     @FXML
     private void handleReadBook() throws IOException {
 
-    	System.out.println(System.getProperties().getProperty("os.name"));
+ 		sendReadRequest();
+		sendRestrictions();
 
-		Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        System.out.println( sdf.format(cal.getTime()) );
+    	mainApp.showBookReader(currentBook);
+    }
 
-		URL whatismyip = new URL("http://checkip.amazonaws.com");
-		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-
-		String ip = in.readLine();
-		try {
-			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
-
-		    System.out.println(cl.getCountry(ip).getCode());
-
-		    cl.close();
-		}
-		catch (IOException e) {
-		    System.out.println("IO Exception");
-		}
-
-		String url = "http://127.0.0.1:8000/requests/read_book/";
+    public void sendReadRequest() throws UnsupportedOperationException, IOException{
+    	String url = "http://127.0.0.1:8000/requests/read_book/";
 
 		HttpPost post = new HttpPost(url);
 		String cookie =LoginController.getCookies();
@@ -168,22 +156,75 @@ public class BookOverviewController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		HttpResponse response = Http_Client.getHttpClient().execute(post);
+		Http_Client.getHttpClient().execute(post);
 
-		BufferedReader rd = new BufferedReader(
-                        new InputStreamReader(response.getEntity().getContent()));
+    }
 
-		StringBuffer userBooks = new StringBuffer();
-		String line = "";
-		while ((line = rd.readLine()) != null) {
-			userBooks.append(line);
+    public void sendRestrictions() throws UnsupportedOperationException, IOException{
+    	/*Get location*/
+    	String location="";
+    	URL whatismyip = new URL("http://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+
+		String ip = in.readLine();
+		try {
+			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
+
+		    location = cl.getCountry(ip).getCode();
+
+		    cl.close();
+		}catch (IOException e) {
+		    System.out.println("IO Exception");
 		}
 
-		String result = userBooks.toString();
-		System.out.println(result);
+		/*Get time*/
+		Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
-    	mainApp.showBookReader(currentBook);
+        /*Send Post*/
+    	String url = "http://127.0.0.1:8000/requests/validate";
+
+		HttpPost post = new HttpPost(url);
+		String cookie =LoginController.getCookies();
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
+		System.out.println("IO Exception1");
+		urlParameters.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
+		System.out.println("IO Exception2");
+		urlParameters.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
+		System.out.println("IO Exception3");
+		urlParameters.add(new BasicNameValuePair("location", location));
+		System.out.println("IO Exception4");
+		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		System.out.println("IO Exception5");
+		urlParameters.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
+		System.out.println("IO Exception6");
+
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+		System.out.println("IO Exception7");
+
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		System.out.println("IO Exception8");
+//		HttpResponse response =
+		Http_Client.getHttpClient().execute(post);
+		System.out.println("IO Exception9");
+
+//		BufferedReader rd = new BufferedReader(
+//                new InputStreamReader(response.getEntity().getContent()));
+//
+//		StringBuffer userBooks = new StringBuffer();
+//		String line = "";
+//		while ((line = rd.readLine()) != null) {
+//			userBooks.append(line);
+//		}
+//
+//		String result = userBooks.toString();
+//		System.out.println(result);
+
     }
+
 
 
 }
