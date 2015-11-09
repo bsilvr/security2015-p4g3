@@ -18,15 +18,14 @@ import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
 import iedcs.model.Book;
 import iedcs.view.LoginController;
+import iedcs.resources.Http_Client;
 import iedcs.resources.Location.LookupService;
 
 public class BookOverviewController {
@@ -158,17 +157,18 @@ public class BookOverviewController {
 
 		String url = "http://127.0.0.1:8000/requests/read_book/";
 
-		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
+		String cookie =LoginController.getCookies();
 
-		System.out.println(LoginController.getCookies());
+
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-		post.setHeader("Cookie", LoginController.getCookies());
 
-		HttpResponse response = client.execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
 		BufferedReader rd = new BufferedReader(
                         new InputStreamReader(response.getEntity().getContent()));

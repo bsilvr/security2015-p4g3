@@ -1,6 +1,8 @@
 package iedcs.view;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,14 +10,12 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
+import iedcs.resources.Http_Client;
 import iedcs.resources.Location.SNMac;
 import iedcs.resources.Location.SNUnix;
 import iedcs.resources.Location.SNWindows;
@@ -87,7 +87,6 @@ public class LoginController {
 
     	String url = "http://127.0.0.1:8000/users/register_device/";
 
-		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -96,7 +95,7 @@ public class LoginController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		client.execute(post);
+		Http_Client.getHttpClient().execute(post);
 
     }
 
@@ -112,7 +111,6 @@ public class LoginController {
     	String url = "http://127.0.0.1:8000/users/login/";
     	String cookie="";
 
-		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -121,18 +119,28 @@ public class LoginController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		HttpResponse response = client.execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-//		setCookies(response.getFirstHeader("Set-Cookie") == null ? "" :
-//			response.getFirstHeader("Set-Cookie").toString());
-//		System.out.println(cookies);
-//		Header[] cookies =  response.getHeaders("Set-Cookie");
+		Header[] cookies =  response.getHeaders("Set-Cookie");
+		for(int i=0; i< cookies.length; i++){
+			System.out.println(cookies[i].getValue());
+		}
 
-//		cookie += cookies[1].getValue().substring(0, cookies[1].getValue().indexOf(";")) + "; "
-//				+ cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));
-//		System.out.print(cookie);
-//
-//		setCookies(cookie);
+		cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
+
+
+		setCookies(cookie);
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
+
+		StringBuffer userBooks = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
+		}
+
+		String result = userBooks.toString();
+		System.out.println(result);
 		if(response.getStatusLine().getStatusCode()==302){
 			sendDeviceKey();
 			mainApp.showBooksOverview(email.getText());
@@ -145,7 +153,7 @@ public class LoginController {
 	        alert.showAndWait();
 		}
     }
-    public static  String getCookies() {
+    public static String getCookies() {
     	return cookies;
       }
     public void setCookies(String cookies) {
