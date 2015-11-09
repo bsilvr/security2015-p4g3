@@ -86,9 +86,9 @@ def validate(request):
     if device_key==None or device_key=="":
         return HttpResponse("Invalid device key", status=status.HTTP_400_BAD_REQUEST)
 
-    device = Devices.objects.get(device_key=device_key)
+    device = Devices.objects.all().filter(device_key=device_key)
 
-    if device is None:
+    if device is []:
         return HttpResponse("Device is not registered", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -123,6 +123,7 @@ def validate(request):
         return HttpResponse("Invalid time", status=status.HTTP_400_BAD_REQUEST)
 
     hour = time.split(':')[0]
+    print hour
 
     if hour < 8 or hour > 20:
         return HttpResponse("User not allowed to read the book at this time", status=status.HTTP_403_FORBIDDEN)
