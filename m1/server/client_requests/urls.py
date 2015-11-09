@@ -19,7 +19,7 @@ from client_requests import views
 
 urlpatterns = [
 	url(r'^read_book/$', views.read_book, name='read_book'),
-	#url(r'^validate/$', views.validate, name='validate'),
+	url(r'^validate/$', views.validate, name='validate'),
 	url(r'^decrypt/$', views.decrypt, name='decrypt'),
 	url(r'^get_file/$', views.get_file, name='get_file'),
 

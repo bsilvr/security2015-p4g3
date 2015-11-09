@@ -5,7 +5,7 @@ def cipher():
     file_key="passwordpassword"
     with open("original.txt", 'rb+') as book_file:
             with open("cipher.txt", 'wrb') as cipher_file:
-                block_size = 64
+                block_size = 16
                 bytes_read = 0
                 file_length = os.path.getsize("original.txt")
 
@@ -25,7 +25,7 @@ def decipher():
     file_key="passwordpassword"
     with open("cipher.txt", 'rb+') as book_file:
             with open("after.txt", 'wrb') as cipher_file:
-                block_size = 64
+                block_size = 16
                 bytes_read = 0
                 file_length = os.path.getsize("cipher.txt")
 
