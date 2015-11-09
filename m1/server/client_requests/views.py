@@ -114,7 +114,7 @@ def validate(request):
 
     hour = time.split(':')[0]
 
-    if int(hour) < 8 or int(hour) > 20:
+    if int(hour) < 8 or int(hour) > 24:
         return HttpResponse("User not allowed to read the book at this time", status=status.HTTP_403_FORBIDDEN)
 
     # End of validating reading restrictions
