@@ -3,7 +3,7 @@
 import requests
 
 player_key="kR5OjIhyGFLT7hSk"
-device_key="aaaaaaaaa"
+device_key="aaaaaaaaaaaaaaaa"
 so="Linux"
 location = "PT"
 book_id = "49941"
