@@ -7,14 +7,14 @@ from player.models import Player
 
 class User_key(models.Model):
     user = models.OneToOneField(User, primary_key=True)
-    user_key = models.BinaryField(max_length=128)
+    user_key = models.CharField(max_length=128)
 
 class Devices(models.Model):
     user = models.ManyToManyField(User)
-    device_key = models.BinaryField(max_length=128)
+    device_key = models.CharField(max_length=128)
     device_name = models.CharField(max_length=250)
 
 class Purchases(models.Model):
     user = models.ForeignKey(User)
     book_id = models.ForeignKey(Book)
-    random = models.BinaryField(max_length=128)
+    random = models.CharField(max_length=128)
