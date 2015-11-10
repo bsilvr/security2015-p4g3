@@ -1,14 +1,12 @@
 import json
 import os
-import tempfile
 import base64
-import numconv
 from Crypto.Cipher import AES
 
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
-from users_data.models import User_key, Purchases, Devices
+from users_data.models import Purchases, Devices
 from books.models import Book
 from player.models import Player
 from restrictions.models import *
@@ -174,7 +172,6 @@ def validate(request):
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
 
     response['random'] = base64.b64encode(random)
-    response['random'] = NumConv(64).str2int(random)
 
     for c in random:
         print ord(c),
@@ -232,4 +229,6 @@ def decrypt(request):
     aes = AES.new(user_key, AES.MODE_CBC, IV)
     encryptedKey = aes.encrypt(key)
 
-    return HttpResponse(encryptedKey, status=status.HTTP_200_OK)
+    encryptedKey_b64 = base64.b16encode(encryptedKey)
+
+    return HttpResponse(encryptedKey_b64, status=status.HTTP_200_OK)
