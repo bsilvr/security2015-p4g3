@@ -1,6 +1,8 @@
 import json
 import os
 import tempfile
+import base64
+import numconv
 from Crypto.Cipher import AES
 
 from rest_framework import status
@@ -10,6 +12,7 @@ from users_data.models import User_key, Purchases, Devices
 from books.models import Book
 from player.models import Player
 from restrictions.models import *
+
 
 
 @api_view(['POST'])
@@ -114,7 +117,7 @@ def validate(request):
 
     hour = time.split(':')[0]
 
-    if int(hour) < 8 or int(hour) > 24:
+    if int(hour) < 0 or int(hour) > 24:
         return HttpResponse("User not allowed to read the book at this time", status=status.HTTP_403_FORBIDDEN)
 
     # End of validating reading restrictions
@@ -170,7 +173,13 @@ def validate(request):
 
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
 
-    response['random'] = random
+    response['random'] = base64.b64encode(random)
+    response['random'] = NumConv(64).str2int(random)
+
+    for c in random:
+        print ord(c),
+    print
+    print response['random']
 
     return response
 
@@ -209,7 +218,8 @@ def get_file(request):
 
 @api_view(['POST'])
 def decrypt(request):
-    key = request.META.get('HTTP_KEY')
+    key = request.POST.get('Key')
+    key= base64.b64decode(key)
 
     if not request.user.is_authenticated():
         return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)

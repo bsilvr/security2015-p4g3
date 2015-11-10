@@ -6,21 +6,26 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.util.Base64;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -227,56 +232,99 @@ public class BookOverviewController {
 			userBooks1.append(line);
 		}
 
+		Header HeaderRandom = response1.getFirstHeader("random");
+
+		String random = HeaderRandom.getValue();
+		byte[] decoded = Base64.getDecoder().decode(random);
+		System.out.println(random);
+		for(byte v :decoded){
+			System.out.printf("%d ", (int) Math.abs((double) v));
+		}
+		System.out.println();
+
+		KeyManager.setRandom(decoded);
+
+		String encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
+
+
+		sendKey1(Base64.getEncoder().encodeToString(encript.getBytes()));
+    }
+
+    public void sendKey1(String key) throws UnsupportedOperationException, IOException{
+    	String url = "http://127.0.0.1:8000/requests/decrypt/";
+
+		HttpPost post = new HttpPost(url);
+		String cookie = LoginController.getCookies();
+
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("Key", key));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+
+		BufferedReader rd1 = new BufferedReader(
+                new InputStreamReader(response1.getEntity().getContent()));
+
+		StringBuffer userBooks1 = new StringBuffer();
+		String line = "";
+		while ((line = rd1.readLine()) != null) {
+			userBooks1.append(line);
+		}
+
 		String result1 = userBooks1.toString();
 		System.out.println(result1);
-		Header HeaderRandom = response1.getFirstHeader("random");
-		KeyManager.setRandom(HeaderRandom.getValue());
-		System.out.println("key1 generated");
-		String encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
-		String decript = decrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), encript);
-		System.out.print(decript);
-
-
 
     }
 
-    public static String encrypt(String key, String initVector, String value) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+    public static String encrypt(String key, String initVector, byte[] value) {
+    	try{
+    		String finale="";
+	    	String password = key;
 
-            byte[] encrypted = cipher.doFinal(value.getBytes());
-            System.out.println("encrypted string: "
-                    + Base64.encodeBase64String(encrypted));
 
-            return Base64.encodeBase64String(encrypted);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+	        byte[] cipherText;
+	        InputStream is = new ByteArrayInputStream(value);
 
-        return null;
+	        byte[] keydata = password.getBytes();
+	        SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
+
+
+	        Cipher c;
+	        c = Cipher.getInstance("AES/CBC/NoPadding");
+
+
+	        IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
+
+	        c.init(Cipher.ENCRYPT_MODE, sks, spec);
+
+	        long bytesRead = 0;
+	        long fileSize = value.length;
+	        int blockSize = c.getBlockSize();
+
+	        while (bytesRead < fileSize){
+	            byte[] dataBlock = new byte[blockSize];
+	            bytesRead += is.read(dataBlock);
+	            cipherText = c.update(dataBlock);
+	            finale += cipherText.toString();
+	        }
+	        cipherText = c.doFinal();
+	        System.out.println("Finale: " + finale);
+
+	        return finale;
+
+    }catch(Exception e){
+        System.out.println(e.getMessage());
+    }return null;
+
     }
 
-    public static String decrypt(String key, String initVector, String encrypted) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
-
-            return new String(original);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
 
 
 
