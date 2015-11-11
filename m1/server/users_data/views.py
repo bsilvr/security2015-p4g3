@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -44,6 +45,8 @@ def create_user(request):
     user.save()
 
     user_key = os.urandom(16)
+
+    user_key = base64.b64encode(user_key)
 
     user_extra_info = User_key(user=user, user_key=user_key)
 
