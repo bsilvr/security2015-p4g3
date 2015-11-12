@@ -127,6 +127,9 @@ def validate(request):
 
     IV = 'oObVMqPyzcRzWvyB'
 
+    random = base64.b64decode(random)
+    user_key = base64.b64decode(user_key)
+
 
     # cipher random with player key
     aes = AES.new(player_key, AES.MODE_CBC, IV)
@@ -184,7 +187,6 @@ def validate(request):
 @api_view(['POST'])
 def get_file(request):
     book_id = request.POST.get('book_id')
-    print "ddd"
 
     if not request.user.is_authenticated():
         return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
@@ -224,11 +226,13 @@ def decrypt(request):
 
     user_key = request.user.user_key.user_key
 
+    user_key = base64.b64decode(user_key)
+
     IV = 'oObVMqPyzcRzWvyB'
 
     aes = AES.new(user_key, AES.MODE_CBC, IV)
     encryptedKey = aes.encrypt(key)
 
-    encryptedKey_b64 = base64.b16encode(encryptedKey)
+    encryptedKey_b64 = base64.b64encode(encryptedKey)
 
     return HttpResponse(encryptedKey_b64, status=status.HTTP_200_OK)
