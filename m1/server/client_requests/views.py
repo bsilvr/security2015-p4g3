@@ -235,4 +235,8 @@ def decrypt(request):
 
     encryptedKey_b64 = base64.b64encode(encryptedKey)
 
-    return HttpResponse(encryptedKey_b64, status=status.HTTP_200_OK)
+    response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
+
+    response['']
+
+    return response
