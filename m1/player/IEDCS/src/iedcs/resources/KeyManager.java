@@ -11,6 +11,7 @@ public class KeyManager {
 	private static String IV = "oObVMqPyzcRzWvyB";
 	private static byte[] random = new byte[16];
 	private static byte[] key = new byte[16];
+	private static byte[] fileKey = new byte[16];
 
 	public static void createDeviveKey(){
 
@@ -29,6 +30,13 @@ public class KeyManager {
 		else{
 			System.exit(0);
 		}
+	}
+
+	public static void setFileKey(byte[] fileKeyStr){
+		fileKey = fileKeyStr;
+	}
+	public static byte[] getFileKey(){
+		return fileKey;
 	}
 
 	public static void setKey(byte[] keyStr){

@@ -9,7 +9,11 @@ import javafx.scene.image.ImageView;
 import java.util.Base64;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -18,6 +22,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -284,6 +289,8 @@ public class BookOverviewController {
 
 		System.out.print("aqui" + encript);
 
+		KeyManager.setFileKey(encript);
+
 		getFile();
 
     }
@@ -314,7 +321,7 @@ public class BookOverviewController {
 		}
 
 		String result1 = userBooks1.toString();
-		System.out.println(result1);
+		decrypt(KeyManager.getFileKey(), KeyManager.getIV(), result1);
     }
 
 
@@ -343,6 +350,48 @@ public class BookOverviewController {
             return encrypted;
 
 
+
+    }catch(Exception e){
+        System.out.println(e.getMessage());
+    }return null;
+
+    }
+
+    public static String decrypt(byte[] keydata, String initVector, String book) {
+    	try{
+
+            File output = new File("LIVROO.txt");
+
+            byte[] cipherText;
+            InputStream fisin = new ByteArrayInputStream(book.getBytes());
+            FileOutputStream fiout = new FileOutputStream(output);
+
+            SecretKey secretKey;
+
+            SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
+
+
+            Cipher c;
+            c = Cipher.getInstance("AES/CBC/NoPadding");
+
+
+            IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
+
+            c.init(Cipher.DECRYPT_MODE, sks, spec);
+
+            long bytesRead = 0;
+            long fileSize = book.length();
+            int blockSize = c.getBlockSize();
+
+            while (bytesRead < fileSize){
+                byte[] dataBlock = new byte[blockSize];
+                bytesRead += fisin.read(dataBlock);
+                cipherText = c.update(dataBlock);
+                fiout.write(cipherText);
+            }
+            cipherText = c.doFinal();
+
+            fiout.close();
 
     }catch(Exception e){
         System.out.println(e.getMessage());
