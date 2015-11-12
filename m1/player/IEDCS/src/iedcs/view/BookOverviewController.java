@@ -209,7 +209,6 @@ public class BookOverviewController {
 		urlParameters.add(new BasicNameValuePair("location", location));
 		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
 		urlParameters.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
-		System.out.println(sdf.format(cal.getTime()));
 
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
 
@@ -349,7 +348,6 @@ public class BookOverviewController {
 
             Cipher c;
             c = Cipher.getInstance("AES/CBC/NoPadding");
-
 
             IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
 

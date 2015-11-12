@@ -68,7 +68,6 @@ public class LoginController {
 
 
     	String url = "http://127.0.0.1:8000/users/register_device/";
-    	System.out.println(KeyManager.getDeviceKey());
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
@@ -90,8 +89,6 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
-		String result = userBooks.toString();
-		System.out.println(result);
     }
 
     /**
@@ -131,8 +128,6 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
-		String result = userBooks.toString();
-		System.out.println(result);
 		if(response.getStatusLine().getStatusCode()==302){
 			sendDeviceKey();
 			mainApp.showBooksOverview(email.getText());

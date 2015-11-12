@@ -40,7 +40,6 @@ public class BookReaderController {
 	public void showFile() throws InterruptedException, ExecutionException {
 
 		linesTextArea.appendText(KeyManager.getBook() + "\n");
-
 	}
 
 	/**
