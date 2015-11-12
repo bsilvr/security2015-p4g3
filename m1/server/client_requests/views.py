@@ -172,6 +172,7 @@ def validate(request):
                 cipher_file.write(ciphered_block)
 
 
+
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
 
     response['random'] = base64.b64encode(random)
