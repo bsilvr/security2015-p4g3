@@ -1,8 +1,9 @@
 from Crypto.Cipher import AES
 import os
+import base64
 
 def cipher():
-    file_key="passwordpassword"
+    file_key="IthUlaB5oF+NpKjmiF4P4Q=="
     with open("original.txt", 'rb+') as book_file:
             with open("cipher.txt", 'wrb') as cipher_file:
                 block_size = 16
@@ -13,7 +14,7 @@ def cipher():
                 data += chr(length)*length
                 book_file.seek(0)
                 IV = "aaaaaaaaaaaaaaaa"
-                aes = AES.new(file_key, AES.MODE_CBC, IV)
+                aes = AES.new(base64.b64decode(file_key), AES.MODE_CBC, IV)
                 size = len(data)
                 while bytes_read < size:
                     block = data[0:block_size]
@@ -27,7 +28,7 @@ def cipher():
 
 
 def decipher():
-    file_key="passwordpassword"
+    file_key="IthUlaB5oF+NpKjmiF4P4Q=="
     with open("cipher.txt", 'rb+') as book_file:
             with open("after.txt", 'wrb') as cipher_file:
                 block_size = 16

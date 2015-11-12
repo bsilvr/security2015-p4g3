@@ -176,11 +176,6 @@ def validate(request):
 
     response['random'] = base64.b64encode(random)
 
-    for c in random:
-        print ord(c),
-    print
-    print response['random']
-
     return response
 
 
@@ -202,7 +197,6 @@ def get_file(request):
 
 
     file_path = "media/cipher_books/pg" + book_id + ".txt"
-    print file_path
 
     cipher_file = open(file_path, 'rb')
 
@@ -212,7 +206,7 @@ def get_file(request):
 
     os.remove(file_path)
 
-    return HttpResponse(cipher_content, content_type='text/plain', status=status.HTTP_200_OK)
+    return HttpResponse(base64.b64encode(cipher_content), content_type='text/plain', status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

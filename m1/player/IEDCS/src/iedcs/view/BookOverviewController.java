@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -246,7 +247,6 @@ public class BookOverviewController {
 
 		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
 
-
 		sendKey1(Base64.getEncoder().encodeToString(encript));
     }
 
@@ -287,7 +287,6 @@ public class BookOverviewController {
 
 		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIV(), KeyManager.getKey());
 
-		System.out.print("aqui" + encript);
 
 		KeyManager.setFileKey(encript);
 
@@ -321,7 +320,8 @@ public class BookOverviewController {
 		}
 
 		String result1 = userBooks1.toString();
-		decrypt(KeyManager.getFileKey(), KeyManager.getIV(), result1);
+
+		decrypt(KeyManager.getFileKey(), KeyManager.getIV(), Base64.getDecoder().decode(result1));
     }
 
 
@@ -357,13 +357,13 @@ public class BookOverviewController {
 
     }
 
-    public static String decrypt(byte[] keydata, String initVector, String book) {
+    public static String decrypt(byte[] keydata, String initVector, byte[] book) {
     	try{
 
             File output = new File("LIVROO.txt");
 
             byte[] cipherText;
-            InputStream fisin = new ByteArrayInputStream(book.getBytes());
+            InputStream fisin = new ByteArrayInputStream(book);
             FileOutputStream fiout = new FileOutputStream(output);
 
             SecretKey secretKey;
@@ -380,7 +380,7 @@ public class BookOverviewController {
             c.init(Cipher.DECRYPT_MODE, sks, spec);
 
             long bytesRead = 0;
-            long fileSize = book.length();
+            long fileSize = book.length;
             int blockSize = c.getBlockSize();
 
             while (bytesRead < fileSize){

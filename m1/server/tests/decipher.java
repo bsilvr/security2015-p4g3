@@ -3,6 +3,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import javax.crypto.spec.IvParameterSpec;
+import java.util.Base64;
 
 
 public class decipher{
@@ -10,7 +11,7 @@ public class decipher{
     public static void main(String args[]){
 
         try{
-            String password = "passwordpassword";
+            String password = "IthUlaB5oF+NpKjmiF4P4Q==";
             File input = new File("cipher.txt");
             File output = new File("after.txt");
 
@@ -20,7 +21,7 @@ public class decipher{
 
             SecretKey secretKey;
 
-            byte[] keydata = password.getBytes();
+            byte[] keydata = Base64.getDecoder().decode(password);
             SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
 
 
