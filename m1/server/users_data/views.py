@@ -113,6 +113,9 @@ def buy_book(request):
 
     random = os.urandom(16)
 
+    random = base64.b64encode(random)
+
+
     purchase = Purchases(user=request.user, book_id=book, random=random)
 
     purchase.save()
