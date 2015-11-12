@@ -233,10 +233,6 @@ def decrypt(request):
     aes = AES.new(user_key, AES.MODE_CBC, IV)
     encryptedKey = aes.encrypt(key)
 
-    encryptedKey_b64 = base64.b64encode(encryptedKey)
-
-    response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
-
-    response['']
-
+    response = HttpResponse("Successfully ciphered 2", status=status.HTTP_200_OK)
+    response['encryptedKey'] = base64.b64encode(encryptedKey)
     return response

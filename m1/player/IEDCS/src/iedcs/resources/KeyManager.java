@@ -10,6 +10,7 @@ public class KeyManager {
 	private static String playerKey = "kR5OjIhyGFLT7hSk";
 	private static String IV = "oObVMqPyzcRzWvyB";
 	private static byte[] random = new byte[16];
+	private static byte[] key = new byte[16];
 
 	public static void createDeviveKey(){
 
@@ -30,6 +31,12 @@ public class KeyManager {
 		}
 	}
 
+	public static void setKey(byte[] keyStr){
+		key = keyStr;
+	}
+	public static byte[] getKey(){
+		return key;
+	}
 	public static void setRandom(byte[] randomStr){
 		random = randomStr;
 	}

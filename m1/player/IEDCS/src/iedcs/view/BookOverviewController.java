@@ -9,20 +9,15 @@ import javafx.scene.image.ImageView;
 import java.util.Base64;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -275,20 +270,61 @@ public class BookOverviewController {
 			userBooks1.append(line);
 		}
 
+		//String result1 = userBooks1.toString();
+
+		Header HeaderKey = response1.getFirstHeader("encryptedKey");
+
+		String key2 = HeaderKey.getValue();
+
+		byte[] decoded = Base64.getDecoder().decode(key2);
+
+		KeyManager.setKey(decoded);
+
+		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIV(), KeyManager.getKey());
+
+		System.out.print("aqui" + encript);
+
+		getFile();
+
+    }
+
+    public void getFile() throws UnsupportedOperationException, IOException{
+    	String url = "http://127.0.0.1:8000/requests/get_file/";
+
+		HttpPost post = new HttpPost(url);
+		String cookie = LoginController.getCookies();
+
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+
+		BufferedReader rd1 = new BufferedReader(
+                new InputStreamReader(response1.getEntity().getContent()));
+
+		StringBuffer userBooks1 = new StringBuffer();
+		String line = "";
+		while ((line = rd1.readLine()) != null) {
+			userBooks1.append(line);
+		}
+
 		String result1 = userBooks1.toString();
 		System.out.println(result1);
-
     }
 
 
     public static byte[] encrypt(String key, String initVector, byte[] value) {
     	try{
-    		String finale="";
 	    	String password = key;
 
 
-	        byte[] cipherText;
-	        InputStream is = new ByteArrayInputStream(value);
+	        /*byte[] cipherText;
+	        InputStream is = new ByteArrayInputStream(value)*/
 
 	        byte[] keydata = password.getBytes();
 	        SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
@@ -306,20 +342,7 @@ public class BookOverviewController {
 
             return encrypted;
 
-	        /*long bytesRead = 0;
-	        long fileSize = value.length;
-	        int blockSize = c.getBlockSize();
 
-	        while (bytesRead < fileSize){
-	            byte[] dataBlock = new byte[blockSize];
-	            bytesRead += is.read(dataBlock);
-	            cipherText = c.update(dataBlock);
-	            finale += cipherText.toString();
-	        }
-	        cipherText = c.doFinal();
-	        System.out.println("Finale: " + finale);
-
-	        return finale;*/
 
     }catch(Exception e){
         System.out.println(e.getMessage());
