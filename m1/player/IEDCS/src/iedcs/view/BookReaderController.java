@@ -1,18 +1,13 @@
 package iedcs.view;
 
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import iedcs.MainApp;
+import iedcs.resources.KeyManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import iedcs.MainApp;
-import iedcs.view.BookOverviewController;
-import iedcs.model.TextFileReader;
 
 public class BookReaderController {
 
@@ -30,9 +25,6 @@ public class BookReaderController {
 	@FXML
 	private Button back;
 
-	private Future<List<String>> future;
-	private ExecutorService executorService = Executors.newSingleThreadExecutor();
-	private TextFileReader reader = new TextFileReader();
 
 	public void initialize() throws InterruptedException, ExecutionException {
 		titleLabel.setText(BookOverviewController.getCurrentBook().getBookTitle());
@@ -47,19 +39,7 @@ public class BookReaderController {
 
 	public void showFile() throws InterruptedException, ExecutionException {
 
-		future = executorService.submit(new Callable<List<String>>() {
-			public List<String> call() throws Exception {
-				return reader.read(BookOverviewController.getCurrentBook().getBookTxt());
-			}
-		});
-
-		List<String> lines = future.get();
-		executorService.shutdownNow();
-		linesTextArea.clear();
-		for (String line : lines ) {
-			linesTextArea.appendText(line + "\n");
-		}
-
+		linesTextArea.appendText(KeyManager.getBook() + "\n");
 
 	}
 

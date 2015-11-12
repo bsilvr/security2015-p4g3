@@ -1,7 +1,5 @@
 package iedcs.model;
 
-import java.io.File;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -15,13 +13,12 @@ public class Book {
     private final StringProperty language;
     private final StringProperty image;
     private final StringProperty id;
-    private final File txt;
 
     /**
      * Default constructor.
      */
     public Book() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null);
     }
 
     /**
@@ -30,18 +27,12 @@ public class Book {
      * @param firstName
      * @param lastName
      */
-    public Book(String author, String title, String language, String image, String id, File txt) {
+    public Book(String author, String title, String language, String image, String id) {
         this.author = new SimpleStringProperty(author);
         this.title = new SimpleStringProperty(title);
         this.language = new SimpleStringProperty(language);
         this.image = new SimpleStringProperty(image);
         this.id = new SimpleStringProperty(id);
-        this.txt = txt;
-
-    }
-
-    public File getBookTxt() {
-        return txt;
     }
 
     public String getBookAuthor() {
