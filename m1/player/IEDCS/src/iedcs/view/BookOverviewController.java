@@ -236,18 +236,18 @@ public class BookOverviewController {
 
 		String random = HeaderRandom.getValue();
 		byte[] decoded = Base64.getDecoder().decode(random);
-		System.out.println(random);
+		/*System.out.println(random);
 		for(byte v :decoded){
 			System.out.printf("%d ", (int) Math.abs((double) v));
 		}
-		System.out.println();
+		System.out.println();*/
 
 		KeyManager.setRandom(decoded);
 
-		String encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
+		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
 
 
-		sendKey1(Base64.getEncoder().encodeToString(encript.getBytes()));
+		sendKey1(Base64.getEncoder().encodeToString(encript));
     }
 
     public void sendKey1(String key) throws UnsupportedOperationException, IOException{
@@ -281,7 +281,7 @@ public class BookOverviewController {
     }
 
 
-    public static String encrypt(String key, String initVector, byte[] value) {
+    public static byte[] encrypt(String key, String initVector, byte[] value) {
     	try{
     		String finale="";
 	    	String password = key;
@@ -302,7 +302,11 @@ public class BookOverviewController {
 
 	        c.init(Cipher.ENCRYPT_MODE, sks, spec);
 
-	        long bytesRead = 0;
+	        byte[] encrypted = c.doFinal(value);
+
+            return encrypted;
+
+	        /*long bytesRead = 0;
 	        long fileSize = value.length;
 	        int blockSize = c.getBlockSize();
 
@@ -315,7 +319,7 @@ public class BookOverviewController {
 	        cipherText = c.doFinal();
 	        System.out.println("Finale: " + finale);
 
-	        return finale;
+	        return finale;*/
 
     }catch(Exception e){
         System.out.println(e.getMessage());
