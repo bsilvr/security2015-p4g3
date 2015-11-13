@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutionException;
 
 import iedcs.MainApp;
 import iedcs.resources.KeyManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,6 +29,7 @@ public class BookReaderController {
 
 	public void initialize() throws InterruptedException, ExecutionException {
 		titleLabel.setText(BookOverviewController.getCurrentBook().getBookTitle());
+
 		showFile();
 	}
 
@@ -40,6 +42,14 @@ public class BookReaderController {
 	public void showFile() throws InterruptedException, ExecutionException {
 
 		linesTextArea.appendText(KeyManager.getBook() + "\n");
+		Platform.runLater( new Runnable() {
+		    @Override
+		    public void run() {
+		    	linesTextArea.positionCaret( 0 );
+		    }
+		});
+
+		linesTextArea.setScrollTop(0);
 	}
 
 	/**
@@ -51,5 +61,6 @@ public class BookReaderController {
         this.mainApp = mainApp;
 
     }
+
 
 }

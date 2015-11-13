@@ -115,10 +115,7 @@ public class LoginController {
 
 		Header[] cookies =  response.getHeaders("Set-Cookie");
 
-		cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 
-
-		setCookies(cookie);
 		BufferedReader rd = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
 
@@ -129,7 +126,10 @@ public class LoginController {
 		}
 
 		if(response.getStatusLine().getStatusCode()==302){
+			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
+			setCookies(cookie);
 			sendDeviceKey();
+
 			mainApp.showBooksOverview(email.getText());
 	    }
 		else{
