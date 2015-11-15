@@ -4,6 +4,9 @@
 #
 #
 # usage: ./install.sh
+printf "Intalling python-pip..."
+sudo apt-get install python-pip
+printf "done\n"
 
 printf "Intalling Django..."
 pip install Django==1.8.6
