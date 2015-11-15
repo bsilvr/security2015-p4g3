@@ -60,6 +60,19 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'server.urls'
 
+SECURE_SSL_REDIRECT = True
+
+os.environ['HTTPS'] = "on"
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+SECURE_HSTS_SECONDS = 1
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # TEMPLATES = [
 #     {
 #         'BACKEND': 'django.template.backends.django.DjangoTemplates',
