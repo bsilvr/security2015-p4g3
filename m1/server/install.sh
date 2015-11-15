@@ -3,7 +3,7 @@
 # Script to install all needed libraries for execution
 #
 #
-# usage: sudo sh install.sh
+# usage: sh install.sh
 printf "Intalling python-pip...\n"
 sudo apt-get install python-pip
 printf "done\n"
