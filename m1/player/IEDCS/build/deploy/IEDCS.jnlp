@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="IEDCS.jar" size="124055" download="eager" />
+    <jar href="IEDCS.jar" size="124191" download="eager" />
     <jar href="libs/commons-codec-1.10-javadoc.jar" size="433991" download="eager" />
     <jar href="libs/commons-codec-1.10-sources.jar" size="301033" download="eager" />
     <jar href="libs/commons-codec-1.10-test-sources.jar" size="173938" download="eager" />
