@@ -39,7 +39,7 @@ def read_book(request):
 
     response["book_id"] = ""
     response["device_key"] = ""
-    response["player_key"] = ""
+    response["player_version"] = ""
     response["location"] = ""
     response["so"] = ""
     response["time"] = ""
@@ -54,7 +54,7 @@ def read_book(request):
 def validate(request):
     book_id = request.POST.get('book_id')
     device_key = request.POST.get('device_key')
-    player_key = request.POST.get('player_key')
+    player_version = request.POST.get('player_version')
     location = request.POST.get('location')
     so = request.POST.get('so')
     time = request.POST.get('time')
@@ -83,10 +83,11 @@ def validate(request):
         return HttpResponse("Device is not registered", status=status.HTTP_400_BAD_REQUEST)
 
 
-    if player_key==None or player_key=="":
+    if player_version==None or player_version=="":
         return HttpResponse("Invalid player key", status=status.HTTP_400_BAD_REQUEST)
 
-    player = Player.objects.get(player_key=player_key)
+    player = Player.objects.get(player_version=player_version)
+    player_key = player.player_key
 
     if player is None:
         return HttpResponse("Player doesn't exist", status=status.HTTP_400_BAD_REQUEST)
