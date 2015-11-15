@@ -19,34 +19,39 @@ public class KeyManager {
 
 	public static void createDeviveKey(){
 
-		InetAddress ip;
-		try {
+		if (System.getProperties().getProperty("os.name").contains("Linux")) {
+			deviceKey = playerKey;
+	    }
+		else{
+			InetAddress ip;
+			try {
 
-			ip = InetAddress.getLocalHost();
+				ip = InetAddress.getLocalHost();
 
-			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+				NetworkInterface network = NetworkInterface.getByInetAddress(ip);
 
-			byte[] mac = network.getHardwareAddress();
+				byte[] mac = network.getHardwareAddress();
 
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < mac.length; i++) {
-				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "" : ""));
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "" : ""));
+				}
+				deviceKey = sb.toString();
+				deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
+
+				deviceKey+= deviceKey;
+
+				System.out.print(deviceKey);
+
+			} catch (UnknownHostException e) {
+
+				e.printStackTrace();
+
+			} catch (SocketException e){
+
+				e.printStackTrace();
+
 			}
-			deviceKey = sb.toString();
-			deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
-
-			deviceKey+= deviceKey;
-
-			System.out.print(deviceKey);
-
-		} catch (UnknownHostException e) {
-
-			e.printStackTrace();
-
-		} catch (SocketException e){
-
-			e.printStackTrace();
-
 		}
 
 	}
