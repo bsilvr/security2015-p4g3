@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -140,12 +138,9 @@ public class BookOverviewController {
     /**
      * Called when the user clicks on the read button.
      * @throws IOException
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedOperationException
-     * @throws KeyManagementException
      */
     @FXML
-    private void handleReadBook() throws IOException, KeyManagementException, UnsupportedOperationException, NoSuchAlgorithmException {
+    private void handleReadBook() throws IOException {
 
  		sendReadRequest();
  		sendRestrictions();
@@ -155,7 +150,7 @@ public class BookOverviewController {
     	mainApp.showBookReader(currentBook);
     }
 
-    public void sendReadRequest() throws UnsupportedOperationException, IOException, KeyManagementException, NoSuchAlgorithmException{
+    public void sendReadRequest() throws UnsupportedOperationException, IOException{
     	String url = Http_Client.getURL() + "requests/read_book/";
 
 		HttpPost post = new HttpPost(url);
@@ -180,7 +175,7 @@ public class BookOverviewController {
 		}
     }
 
-    public void sendRestrictions() throws UnsupportedOperationException, IOException, KeyManagementException, NoSuchAlgorithmException{
+    public void sendRestrictions() throws UnsupportedOperationException, IOException{
     	/*Get location*/
     	String location="";
     	URL whatismyip = new URL("http://checkip.amazonaws.com");
@@ -242,7 +237,7 @@ public class BookOverviewController {
 
     }
 
-    public void sendKey1() throws UnsupportedOperationException, IOException, KeyManagementException, NoSuchAlgorithmException{
+    public void sendKey1() throws UnsupportedOperationException, IOException{
     	String url = Http_Client.getURL() + "requests/decrypt/";
 
 		HttpPost post = new HttpPost(url);
@@ -282,7 +277,7 @@ public class BookOverviewController {
 
     }
 
-    public void getFile() throws UnsupportedOperationException, IOException, KeyManagementException, NoSuchAlgorithmException{
+    public void getFile() throws UnsupportedOperationException, IOException{
     	String url = Http_Client.getURL() + "requests/get_file/";
 
 		HttpPost post = new HttpPost(url);

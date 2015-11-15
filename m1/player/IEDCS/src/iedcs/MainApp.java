@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -55,7 +53,7 @@ public class MainApp extends Application {
 
     }
 
-	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException {
+	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException {
 
 
         String url = Http_Client.getURL() + "books/get_book/";
@@ -91,7 +89,7 @@ public class MainApp extends Application {
 
 	}
 
-	public Stack<Integer> getUserBooksIds(String email) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException{
+	public Stack<Integer> getUserBooksIds(String email) throws MalformedURLException, IOException{
 
 		Stack<Integer> lifo = new Stack<Integer>();
 
@@ -173,10 +171,8 @@ public class MainApp extends Application {
 
     /**
      * Shows the book overview inside the root layout.
-     * @throws NoSuchAlgorithmException
-     * @throws KeyManagementException
      */
-    public void showBooksOverview(String email) throws KeyManagementException, NoSuchAlgorithmException {
+    public void showBooksOverview(String email) {
         try {
 
         	Stack<Integer> books = getUserBooksIds(email);
