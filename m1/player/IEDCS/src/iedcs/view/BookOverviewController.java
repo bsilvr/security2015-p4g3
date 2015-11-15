@@ -229,13 +229,20 @@ public class BookOverviewController {
 		}
 
 		Header HeaderRandom = response.getFirstHeader("random");
+		Header HeaderIv = response.getFirstHeader("iv");
 
 		String random = HeaderRandom.getValue();
 		byte[] decoded = Base64.getDecoder().decode(random);
 
 		KeyManager.setRandom(decoded);
 
-		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
+		String iv = HeaderIv.getValue();
+		System.out.println(iv);
+		byte[] iv_bytes = Base64.getDecoder().decode(iv);
+
+		KeyManager.setIv(iv_bytes);
+
+		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIv(), KeyManager.getRandom());
 
 		KeyManager.setKey1(encript);
 
@@ -252,6 +259,7 @@ public class BookOverviewController {
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("Key", Base64.getEncoder().encodeToString(KeyManager.getKey1())));
+		urlParameters.add(new BasicNameValuePair("iv", Base64.getEncoder().encodeToString(KeyManager.getIv())));
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
 
 
@@ -276,7 +284,7 @@ public class BookOverviewController {
 
 		KeyManager.setKey2(decoded);
 
-		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIV(), KeyManager.getKey2());
+		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIv(), KeyManager.getKey2());
 
 
 		KeyManager.setFileKey(encript);
@@ -312,11 +320,11 @@ public class BookOverviewController {
 
 		String result1 = userBooks.toString();
 
-		decryptBook(KeyManager.getFileKey(), KeyManager.getIV(), Base64.getDecoder().decode(result1));
+		decryptBook(KeyManager.getFileKey(), KeyManager.getIv(), Base64.getDecoder().decode(result1));
     }
 
 
-    public static byte[] encrypt(String key, String initVector, byte[] value) {
+    public static byte[] encrypt(String key, byte[] initVector, byte[] value) {
     	try{
 	    	String password = key;
 
@@ -328,7 +336,7 @@ public class BookOverviewController {
 	        c = Cipher.getInstance("AES/CBC/NoPadding");
 
 
-	        IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
+	        IvParameterSpec spec = new IvParameterSpec(initVector);
 
 	        c.init(Cipher.ENCRYPT_MODE, sks, spec);
 
@@ -344,7 +352,7 @@ public class BookOverviewController {
 
     }
 
-    public static String decryptBook(byte[] keydata, String initVector, byte[] book) {
+    public static String decryptBook(byte[] keydata, byte[] initVector, byte[] book) {
     	try{
     		String str = "";
 
@@ -357,7 +365,7 @@ public class BookOverviewController {
             Cipher c;
             c = Cipher.getInstance("AES/CBC/NoPadding");
 
-            IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
+            IvParameterSpec spec = new IvParameterSpec(initVector);
 
             c.init(Cipher.DECRYPT_MODE, sks, spec);
 

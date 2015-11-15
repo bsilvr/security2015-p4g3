@@ -125,7 +125,7 @@ def validate(request):
     random = Purchases.objects.all().filter(user=request.user, book_id=book)[0].random
     user_key = request.user.user_key.user_key
 
-    IV = 'oObVMqPyzcRzWvyB'
+    IV = os.urandom(16)
 
     random = base64.b64decode(random)
     user_key = base64.b64decode(user_key)
@@ -175,6 +175,8 @@ def validate(request):
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
 
     response['random'] = base64.b64encode(random)
+    print base64.b64encode(IV)
+    response['iv'] = base64.b64encode(IV)
 
     return response
 
@@ -214,6 +216,9 @@ def decrypt(request):
     key = request.POST.get('Key')
     key= base64.b64decode(key)
 
+    IV = request.POST.get('iv')
+    IV= base64.b64decode(IV)
+
     if not request.user.is_authenticated():
         return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
 
@@ -221,8 +226,6 @@ def decrypt(request):
     user_key = request.user.user_key.user_key
 
     user_key = base64.b64decode(user_key)
-
-    IV = 'oObVMqPyzcRzWvyB'
 
     aes = AES.new(user_key, AES.MODE_CBC, IV)
     encryptedKey = aes.encrypt(key)
