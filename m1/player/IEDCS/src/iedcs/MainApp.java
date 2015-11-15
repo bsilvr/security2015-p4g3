@@ -16,7 +16,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.model.Book;
-import iedcs.resources.Http_Client;
+import iedcs.model.Http_Client;
 import iedcs.resources.JsonParser.Json;
 import iedcs.resources.JsonParser.JsonArray;
 import iedcs.resources.JsonParser.JsonObject;
@@ -56,7 +56,7 @@ public class MainApp extends Application {
 	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException {
 
 
-        String url = "http://127.0.0.1:8000/books/get_book/";
+        String url = Http_Client.getURL() + "books/get_book/";
         String param1 = pop.toString();
 		String query = "book_id="+ param1;
 
@@ -93,7 +93,7 @@ public class MainApp extends Application {
 
 		Stack<Integer> lifo = new Stack<Integer>();
 
-		String url = "http://127.0.0.1:8000/users/get_purchases/";
+		String url = Http_Client.getURL() + "users/get_purchases/";
 
 
 		HttpPost post = new HttpPost(url);

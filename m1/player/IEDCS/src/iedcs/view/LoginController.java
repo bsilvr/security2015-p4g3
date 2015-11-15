@@ -15,8 +15,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
-import iedcs.resources.Http_Client;
-import iedcs.resources.KeyManager;
+import iedcs.model.Http_Client;
+import iedcs.model.KeyManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -67,7 +67,7 @@ public class LoginController {
     public void sendDeviceKey() throws ClientProtocolException, IOException {
 
 
-    	String url = "http://127.0.0.1:8000/users/register_device/";
+    	String url = Http_Client.getURL() + "users/register_device/";
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
@@ -100,7 +100,7 @@ public class LoginController {
     private void handleLogin() throws ClientProtocolException, IOException {
 
     	KeyManager.createDeviveKey();
-    	String url = "http://127.0.0.1:8000/users/login/";
+    	String url = Http_Client.getURL() + "users/login/";
     	String cookie="";
 
 		HttpPost post = new HttpPost(url);
@@ -146,7 +146,7 @@ public class LoginController {
       }
 
 	public static String getCookies() {
-		// TODO Auto-generated method stub
+
 		return cookies;
 	}
 }

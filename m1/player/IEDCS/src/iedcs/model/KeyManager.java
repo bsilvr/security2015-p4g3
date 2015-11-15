@@ -1,4 +1,4 @@
-package iedcs.resources;
+package iedcs.model;
 
 import iedcs.resources.Location.SNMac;
 import iedcs.resources.Location.SNUnix;

@@ -3,7 +3,7 @@ package iedcs.view;
 import java.util.concurrent.ExecutionException;
 
 import iedcs.MainApp;
-import iedcs.resources.KeyManager;
+import iedcs.model.KeyManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

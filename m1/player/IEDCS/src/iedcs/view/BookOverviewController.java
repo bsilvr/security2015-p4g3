@@ -26,8 +26,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
 import iedcs.model.Book;
-import iedcs.resources.Http_Client;
-import iedcs.resources.KeyManager;
+import iedcs.model.Http_Client;
+import iedcs.model.KeyManager;
 import iedcs.resources.Location.LookupService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -151,7 +151,7 @@ public class BookOverviewController {
     }
 
     public void sendReadRequest() throws UnsupportedOperationException, IOException{
-    	String url = "http://127.0.0.1:8000/requests/read_book/";
+    	String url = Http_Client.getURL() + "requests/read_book/";
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
@@ -197,7 +197,7 @@ public class BookOverviewController {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         /*Send Post*/
-    	String url = "http://127.0.0.1:8000/requests/validate/";
+    	String url = Http_Client.getURL() + "requests/validate/";
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
@@ -238,7 +238,7 @@ public class BookOverviewController {
     }
 
     public void sendKey1() throws UnsupportedOperationException, IOException{
-    	String url = "http://127.0.0.1:8000/requests/decrypt/";
+    	String url = Http_Client.getURL() + "requests/decrypt/";
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
@@ -278,7 +278,7 @@ public class BookOverviewController {
     }
 
     public void getFile() throws UnsupportedOperationException, IOException{
-    	String url = "http://127.0.0.1:8000/requests/get_file/";
+    	String url = Http_Client.getURL() + "requests/get_file/";
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
