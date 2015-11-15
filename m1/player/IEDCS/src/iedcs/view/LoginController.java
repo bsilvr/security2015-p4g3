@@ -3,6 +3,8 @@ package iedcs.view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +66,7 @@ public class LoginController {
         this.mainApp = mainApp;
     }
 
-    public void sendDeviceKey() throws ClientProtocolException, IOException {
+    public void sendDeviceKey() throws ClientProtocolException, IOException, KeyManagementException, NoSuchAlgorithmException {
 
 
     	String url = Http_Client.getURL() + "users/register_device/";
@@ -95,9 +97,11 @@ public class LoginController {
      * Called when the user clicks on the read button.
      * @throws IOException
      * @throws ClientProtocolException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
      */
     @FXML
-    private void handleLogin() throws ClientProtocolException, IOException {
+    private void handleLogin() throws ClientProtocolException, IOException, KeyManagementException, NoSuchAlgorithmException {
 
     	KeyManager.createDeviveKey();
     	String url = Http_Client.getURL() + "users/login/";
@@ -110,7 +114,7 @@ public class LoginController {
 		urlParameters.add(new BasicNameValuePair("password", password.getText()));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-
+		Http_Client.create();
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
 		Header[] cookies =  response.getHeaders("Set-Cookie");
