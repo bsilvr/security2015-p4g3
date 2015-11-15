@@ -40,6 +40,6 @@ so3.save()
 so4.save()
 so5.save()
 
-p0 = Player(player_key="kR5OjIhyGFLT7hSk")
+p0 = Player(player_key="kR5OjIhyGFLT7hSk", player_version="1.0.0")
 
 p0.save()
