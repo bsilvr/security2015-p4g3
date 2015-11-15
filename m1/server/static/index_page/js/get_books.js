@@ -43,7 +43,6 @@ function savePurchases(array){
 function purchase_book(){
     var id = event.target.id;
 
-    console.log(id);
     var email = getCookie("email");
 
     $.ajax({
@@ -52,8 +51,13 @@ function purchase_book(){
     data : {csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value, "email": email, "book_id": id },
     dataType : "json",
 });
-    document.location.reload(true);
+    //document.location.reload(true);
+    setTimeout(reload, 100);
 
+}
+
+function reload(){
+    document.location.reload(true);
 }
 
 
