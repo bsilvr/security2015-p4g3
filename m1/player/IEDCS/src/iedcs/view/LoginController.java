@@ -68,7 +68,6 @@ public class LoginController {
 
 
     	String url = "http://127.0.0.1:8000/users/register_device/";
-    	System.out.println(KeyManager.getDeviceKey());
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
@@ -90,8 +89,6 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
-		String result = userBooks.toString();
-		System.out.println(result);
     }
 
     /**
@@ -118,10 +115,7 @@ public class LoginController {
 
 		Header[] cookies =  response.getHeaders("Set-Cookie");
 
-		cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 
-
-		setCookies(cookie);
 		BufferedReader rd = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
 
@@ -131,10 +125,11 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
-		String result = userBooks.toString();
-		System.out.println(result);
 		if(response.getStatusLine().getStatusCode()==302){
+			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
+			setCookies(cookie);
 			sendDeviceKey();
+
 			mainApp.showBooksOverview(email.getText());
 	    }
 		else{

@@ -1,29 +1,19 @@
 package iedcs.view;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import java.util.Base64;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -36,10 +26,15 @@ import org.apache.http.message.BasicNameValuePair;
 
 import iedcs.MainApp;
 import iedcs.model.Book;
-import iedcs.view.LoginController;
 import iedcs.resources.Http_Client;
 import iedcs.resources.KeyManager;
 import iedcs.resources.Location.LookupService;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class BookOverviewController {
 
@@ -149,6 +144,8 @@ public class BookOverviewController {
 
  		sendReadRequest();
  		sendRestrictions();
+		sendKey1();
+		getFile();
 
     	mainApp.showBookReader(currentBook);
     }
@@ -159,7 +156,6 @@ public class BookOverviewController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
-
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
@@ -167,20 +163,16 @@ public class BookOverviewController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-		BufferedReader rd1 = new BufferedReader(
-                new InputStreamReader(response1.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
 
-		StringBuffer userBooks1 = new StringBuffer();
+		StringBuffer userBooks = new StringBuffer();
 		String line = "";
-		while ((line = rd1.readLine()) != null) {
-			userBooks1.append(line);
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
 		}
-
-		String result1 = userBooks1.toString();
-		System.out.println(result1);
-
     }
 
     public void sendRestrictions() throws UnsupportedOperationException, IOException{
@@ -205,52 +197,47 @@ public class BookOverviewController {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         /*Send Post*/
-    	String url1 = "http://127.0.0.1:8000/requests/validate/";
+    	String url = "http://127.0.0.1:8000/requests/validate/";
 
-		HttpPost post1 = new HttpPost(url1);
-		String cookie1 = LoginController.getCookies();
+		HttpPost post = new HttpPost(url);
+		String cookie = LoginController.getCookies();
 
-		List<NameValuePair> urlParameters1 = new ArrayList<NameValuePair>();
-		urlParameters1.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
-		urlParameters1.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
-		urlParameters1.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
-		urlParameters1.add(new BasicNameValuePair("location", location));
-		urlParameters1.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
-		urlParameters1.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
-		System.out.println(sdf.format(cal.getTime()));
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
+		urlParameters.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
+		urlParameters.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
+		urlParameters.add(new BasicNameValuePair("location", location));
+		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
+		urlParameters.add(new BasicNameValuePair("time", sdf.format(cal.getTime())));
 
-		urlParameters1.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie1.substring(cookie1.indexOf("=")+1,cookie1.length())));
+		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
 
-		post1.setEntity(new UrlEncodedFormEntity(urlParameters1));
-		HttpResponse response1 = Http_Client.getHttpClient().execute(post1);
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-		BufferedReader rd1 = new BufferedReader(
-                new InputStreamReader(response1.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
 
-		StringBuffer userBooks1 = new StringBuffer();
+		StringBuffer userBooks = new StringBuffer();
 		String line = "";
-		while ((line = rd1.readLine()) != null) {
-			userBooks1.append(line);
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
 		}
 
-		Header HeaderRandom = response1.getFirstHeader("random");
+		Header HeaderRandom = response.getFirstHeader("random");
 
 		String random = HeaderRandom.getValue();
 		byte[] decoded = Base64.getDecoder().decode(random);
-		/*System.out.println(random);
-		for(byte v :decoded){
-			System.out.printf("%d ", (int) Math.abs((double) v));
-		}
-		System.out.println();*/
 
 		KeyManager.setRandom(decoded);
 
 		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIV(), KeyManager.getRandom());
 
-		sendKey1(Base64.getEncoder().encodeToString(encript));
+		KeyManager.setKey1(encript);
+
     }
 
-    public void sendKey1(String key) throws UnsupportedOperationException, IOException{
+    public void sendKey1() throws UnsupportedOperationException, IOException{
     	String url = "http://127.0.0.1:8000/requests/decrypt/";
 
 		HttpPost post = new HttpPost(url);
@@ -258,39 +245,35 @@ public class BookOverviewController {
 
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-		urlParameters.add(new BasicNameValuePair("Key", key));
+		urlParameters.add(new BasicNameValuePair("Key", Base64.getEncoder().encodeToString(KeyManager.getKey1())));
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
 
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-		BufferedReader rd1 = new BufferedReader(
-                new InputStreamReader(response1.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
 
-		StringBuffer userBooks1 = new StringBuffer();
+		StringBuffer userBooks = new StringBuffer();
 		String line = "";
-		while ((line = rd1.readLine()) != null) {
-			userBooks1.append(line);
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
 		}
 
-		//String result1 = userBooks1.toString();
-
-		Header HeaderKey = response1.getFirstHeader("encryptedKey");
+		Header HeaderKey = response.getFirstHeader("encryptedKey");
 
 		String key2 = HeaderKey.getValue();
 
 		byte[] decoded = Base64.getDecoder().decode(key2);
 
-		KeyManager.setKey(decoded);
+		KeyManager.setKey2(decoded);
 
-		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIV(), KeyManager.getKey());
+		byte[] encript = encrypt(KeyManager.getDeviceKey(), KeyManager.getIV(), KeyManager.getKey2());
 
 
 		KeyManager.setFileKey(encript);
-
-		getFile();
 
     }
 
@@ -308,30 +291,26 @@ public class BookOverviewController {
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-		HttpResponse response1 = Http_Client.getHttpClient().execute(post);
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-		BufferedReader rd1 = new BufferedReader(
-                new InputStreamReader(response1.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
 
-		StringBuffer userBooks1 = new StringBuffer();
+		StringBuffer userBooks = new StringBuffer();
 		String line = "";
-		while ((line = rd1.readLine()) != null) {
-			userBooks1.append(line);
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
 		}
 
-		String result1 = userBooks1.toString();
+		String result1 = userBooks.toString();
 
-		decrypt(KeyManager.getFileKey(), KeyManager.getIV(), Base64.getDecoder().decode(result1));
+		decryptBook(KeyManager.getFileKey(), KeyManager.getIV(), Base64.getDecoder().decode(result1));
     }
 
 
     public static byte[] encrypt(String key, String initVector, byte[] value) {
     	try{
 	    	String password = key;
-
-
-	        /*byte[] cipherText;
-	        InputStream is = new ByteArrayInputStream(value)*/
 
 	        byte[] keydata = password.getBytes();
 	        SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
@@ -357,23 +336,18 @@ public class BookOverviewController {
 
     }
 
-    public static String decrypt(byte[] keydata, String initVector, byte[] book) {
+    public static String decryptBook(byte[] keydata, String initVector, byte[] book) {
     	try{
-
-            File output = new File("LIVROO.txt");
+    		String str = "";
 
             byte[] cipherText;
             InputStream fisin = new ByteArrayInputStream(book);
-            FileOutputStream fiout = new FileOutputStream(output);
-
-            SecretKey secretKey;
+            ByteArrayOutputStream fiout = new ByteArrayOutputStream();
 
             SecretKeySpec sks = new SecretKeySpec(keydata, "AES");
 
-
             Cipher c;
             c = Cipher.getInstance("AES/CBC/NoPadding");
-
 
             IvParameterSpec spec = new IvParameterSpec(initVector.getBytes());
 
@@ -393,16 +367,14 @@ public class BookOverviewController {
 
             fiout.close();
 
+            str = fiout.toString("UTF-8");
+            KeyManager.setBook(str);
+
+
     }catch(Exception e){
         System.out.println(e.getMessage());
     }return null;
 
     }
-
-
-
-
-
-
 
 }

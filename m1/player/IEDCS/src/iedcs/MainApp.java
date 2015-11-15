@@ -1,18 +1,12 @@
 package iedcs;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -60,9 +54,7 @@ public class MainApp extends Application {
     }
 
 	private void getUserBooksInfo(Integer pop) throws MalformedURLException, IOException {
-		/*Livros estaticos para ja*/
-    	File sawyer = new File("resources/books/sawyer.txt");
-    	/*------------------------*/
+
 
         String url = "http://127.0.0.1:8000/books/get_book/";
         String param1 = pop.toString();
@@ -90,7 +82,7 @@ public class MainApp extends Application {
 		String cover = items.get("cover").asString();
 		String id = Integer.toString(items.get("ebook_id").asInt());
 
-        bookData.add(new Book(author,title,language,cover,id, sawyer));
+        bookData.add(new Book(author,title,language,cover,id));
 
 
 
@@ -280,48 +272,8 @@ public class MainApp extends Application {
     }
 
 	public static void main(String[] args) throws IOException {
-		String key = "Bar12345Bar12345"; // 128 bit key
-        String initVector = "RandomInitVector"; // 16 bytes IV
 
-        System.out.println(decrypt(key, initVector, encrypt(key, initVector, "Hello World")));
 		launch(args);
 	}
-	public static String encrypt(String key, String initVector, String value) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5PADDING");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
-
-            byte[] encrypted = cipher.doFinal(value.getBytes());
-            System.out.println("encrypted string: "
-                    + Base64.encodeBase64String(encrypted));
-
-            return Base64.encodeBase64String(encrypted);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static String decrypt(String key, String initVector, String encrypted) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
-            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
-
-            return new String(original);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
 
 }

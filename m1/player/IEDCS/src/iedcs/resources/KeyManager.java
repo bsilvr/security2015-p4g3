@@ -10,8 +10,10 @@ public class KeyManager {
 	private static String playerKey = "kR5OjIhyGFLT7hSk";
 	private static String IV = "oObVMqPyzcRzWvyB";
 	private static byte[] random = new byte[16];
-	private static byte[] key = new byte[16];
+	private static byte[] key2 = new byte[16];
+	private static byte[] key1 = new byte[16];
 	private static byte[] fileKey = new byte[16];
+	private static String book = null;
 
 	public static void createDeviveKey(){
 
@@ -32,18 +34,30 @@ public class KeyManager {
 		}
 	}
 
+	public static void setBook(String bookStr){
+		book = bookStr;
+	}
+	public static String getBook(){
+		return book;
+	}
+
 	public static void setFileKey(byte[] fileKeyStr){
 		fileKey = fileKeyStr;
 	}
 	public static byte[] getFileKey(){
 		return fileKey;
 	}
-
-	public static void setKey(byte[] keyStr){
-		key = keyStr;
+	public static void setKey1(byte[] keyStr){
+		key1 = keyStr;
 	}
-	public static byte[] getKey(){
-		return key;
+	public static byte[] getKey1(){
+		return key1;
+	}
+	public static void setKey2(byte[] keyStr){
+		key2 = keyStr;
+	}
+	public static byte[] getKey2(){
+		return key2;
 	}
 	public static void setRandom(byte[] randomStr){
 		random = randomStr;
