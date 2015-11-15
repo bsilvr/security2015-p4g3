@@ -35,16 +35,16 @@ def read_book(request):
         return HttpResponse("User hasn't bought the book", status=status.HTTP_403_FORBIDDEN)
 
 
-    restrictions = {
-                    "book_id":"",
-                    "device_key":"",
-                    "player_key":"",
-                    "location":"",
-                    "so":"",
-                    "time":"",
-                    }
+    response = HttpResponse("restrictions sent", status=status.HTTP_200_OK)
 
-    return HttpResponse(json.dumps(restrictions), status=status.HTTP_200_OK)
+    response["book_id"] = ""
+    response["device_key"] = ""
+    response["player_key"] = ""
+    response["location"] = ""
+    response["so"] = ""
+    response["time"] = ""
+
+    return response
 
 
 # consulted code from: http://eli.thegreenplace.net/2010/06/25/aes-encryption-of-files-in-python-with-pycrypto
