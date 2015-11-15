@@ -71,11 +71,14 @@ public class LoginController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
+		post.addHeader("Referer", Http_Client.getURL());
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+
+		System.out.println(cookie.substring(cookie.indexOf("=")+1,cookie.length()));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
@@ -128,6 +131,7 @@ public class LoginController {
 		if(response.getStatusLine().getStatusCode()==302){
 			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 			setCookies(cookie);
+			System.out.println(cookie);
 			sendDeviceKey();
 
 			mainApp.showBooksOverview(email.getText());

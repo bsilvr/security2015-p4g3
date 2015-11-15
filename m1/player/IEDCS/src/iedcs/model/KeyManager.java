@@ -8,6 +8,7 @@ public class KeyManager {
 
 	private static String deviceKey = "";
 	private static String playerKey = "kR5OjIhyGFLT7hSk";
+	private static String playerVersion = "1.0.0";
 	private static String IV = "oObVMqPyzcRzWvyB";
 	private static byte[] random = new byte[16];
 	private static byte[] key2 = new byte[16];
@@ -70,6 +71,9 @@ public class KeyManager {
 	}
 	public static String getPlayerKey(){
 		return playerKey;
+	}
+	public static String getPlayerVersion(){
+		return playerVersion;
 	}
 	public static String getIV(){
 		return IV;

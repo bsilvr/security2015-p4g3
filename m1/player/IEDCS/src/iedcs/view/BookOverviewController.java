@@ -156,6 +156,8 @@ public class BookOverviewController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
+		post.addHeader("Referer", Http_Client.getURL());
+
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
@@ -202,9 +204,11 @@ public class BookOverviewController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
+		post.addHeader("Referer", Http_Client.getURL());
+
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
-		urlParameters.add(new BasicNameValuePair("player_key", KeyManager.getPlayerKey()));
+		urlParameters.add(new BasicNameValuePair("player_version", KeyManager.getPlayerVersion()));
 		urlParameters.add(new BasicNameValuePair("so", System.getProperties().getProperty("os.name")));
 		urlParameters.add(new BasicNameValuePair("location", location));
 		urlParameters.add(new BasicNameValuePair("book_id", currentBook.getBookId()));
@@ -242,6 +246,8 @@ public class BookOverviewController {
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
+
+		post.addHeader("Referer", Http_Client.getURL());
 
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -282,6 +288,8 @@ public class BookOverviewController {
 
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
+
+		post.addHeader("Referer", Http_Client.getURL());
 
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();

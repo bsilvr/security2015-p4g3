@@ -98,6 +98,7 @@ public class MainApp extends Application {
 
 		HttpPost post = new HttpPost(url);
 
+		post.addHeader("Referer", Http_Client.getURL());
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email));
