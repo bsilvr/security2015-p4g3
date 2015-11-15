@@ -27,3 +27,7 @@ printf "done\n"
 printf "Populating database...\n"
 python db_scripts.py
 printf "done\n"
+
+printf "Creating folder for ciphered books..."
+mkdir media/cipher_books
+printf "done\n"
