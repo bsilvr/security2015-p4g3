@@ -6,3 +6,4 @@ class Player(models.Model):
     player_key = models.CharField(max_length=200)
     app_file = models.CharField(max_length=200)
     signature = models.CharField(max_length=200)
+    player_version = models.CharField(max_length=50, unique=True)
