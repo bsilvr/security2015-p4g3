@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iedcs.view.LoginController">
+   <children>
+      <Pane layoutX="121.0" layoutY="227.0" prefHeight="245.0" prefWidth="359.0">
+         <children>
+            <TextField fx:id="email" layoutX="96.0" layoutY="56.0" />
+            <PasswordField fx:id="password" layoutX="96.0" layoutY="131.0" />
+            <Label layoutX="96.0" layoutY="29.0" text="Email" />
+            <Label layoutX="95.0" layoutY="100.0" text="Password" />
+            <Button fx:id="loginBtn" layoutX="153.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+         </children>
+      </Pane>
+      <Label layoutX="189.0" layoutY="118.0" text="IEDCS Player">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
