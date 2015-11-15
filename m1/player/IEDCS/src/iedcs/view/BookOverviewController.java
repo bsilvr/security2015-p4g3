@@ -237,7 +237,7 @@ public class BookOverviewController {
 		KeyManager.setRandom(decoded);
 
 		String iv = HeaderIv.getValue();
-		System.out.println(iv);
+
 		byte[] iv_bytes = Base64.getDecoder().decode(iv);
 
 		KeyManager.setIv(iv_bytes);

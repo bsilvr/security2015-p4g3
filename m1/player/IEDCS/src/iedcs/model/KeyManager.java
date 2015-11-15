@@ -33,6 +33,9 @@ public class KeyManager {
 		else{
 			System.exit(0);
 		}
+    	deviceKey += deviceKey;
+    	System.out.print(deviceKey);
+
 	}
 
 	public static void setBook(String bookStr){
@@ -67,7 +70,7 @@ public class KeyManager {
 		return random;
 	}
 	public static String getDeviceKey(){
-		return deviceKey+"00000000";
+		return deviceKey;
 	}
 	public static String getPlayerKey(){
 		return playerKey;

@@ -175,7 +175,6 @@ def validate(request):
     response = HttpResponse("Successfully ciphered", status=status.HTTP_200_OK)
 
     response['random'] = base64.b64encode(random)
-    print base64.b64encode(IV)
     response['iv'] = base64.b64encode(IV)
 
     return response
