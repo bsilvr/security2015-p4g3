@@ -1,8 +1,9 @@
 package iedcs.model;
 
-import iedcs.resources.Location.SNMac;
-import iedcs.resources.Location.SNUnix;
-import iedcs.resources.Location.SNWindows;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class KeyManager {
 
@@ -18,23 +19,35 @@ public class KeyManager {
 
 	public static void createDeviveKey(){
 
-    	if (System.getProperties().getProperty("os.name").contains("Mac")) {
-    		deviceKey = SNMac.getSerialNumber();
-    		deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
-	    }
-    	else if (System.getProperties().getProperty("os.name").contains("Windows")) {
-    		deviceKey = SNWindows.getSerialNumber();
-    		deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
-	    }
-    	else if (System.getProperties().getProperty("os.name").contains("Linux")) {
-    		deviceKey = SNUnix.getSerialNumber();
-    		deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
-	    }
-		else{
-			System.exit(0);
+		InetAddress ip;
+		try {
+
+			ip = InetAddress.getLocalHost();
+
+			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+
+			byte[] mac = network.getHardwareAddress();
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < mac.length; i++) {
+				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "" : ""));
+			}
+			deviceKey = sb.toString();
+			deviceKey = deviceKey.substring(Math.max(deviceKey.length() - 8, 0));
+
+			deviceKey+= deviceKey;
+
+			System.out.print(deviceKey);
+
+		} catch (UnknownHostException e) {
+
+			e.printStackTrace();
+
+		} catch (SocketException e){
+
+			e.printStackTrace();
+
 		}
-    	deviceKey += deviceKey;
-    	System.out.print(deviceKey);
 
 	}
 
