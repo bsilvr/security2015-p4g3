@@ -1,0 +1,40 @@
+package iedcs.model;
+
+import javax.net.ssl.HostnameVerifier;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.SingleClientConnManager;
+
+public class Http_Client {
+	@SuppressWarnings("deprecation")
+	HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+
+
+	@SuppressWarnings("deprecation")
+	DefaultHttpClient cli = new DefaultHttpClient();
+
+	@SuppressWarnings("deprecation")
+	SchemeRegistry registry = new SchemeRegistry();
+	@SuppressWarnings("deprecation")
+	SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
+	socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+	registry.register(new Scheme("https", socketFactory, 443));
+	@SuppressWarnings("deprecation")
+	SingleClientConnManager mgr = new SingleClientConnManager(cli.getParams(), registry);
+
+	private static HttpClient client = HttpClientBuilder.create().build();
+
+
+	public static String URL = "http://127.0.0.1:8000/";
+
+	public static HttpClient getHttpClient(){
+		return client;
+	}
+	public static String getURL(){
+		return URL;
+	}
+}

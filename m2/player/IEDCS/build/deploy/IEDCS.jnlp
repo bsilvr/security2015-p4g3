@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="IEDCS.jnlp">
+  <information>
+    <title>IEDCS</title>
+    <vendor>UA</vendor>
+    <description>IEDCSPlayer</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="IEDCS.jar" size="124191" download="eager" />
+    <jar href="libs/commons-codec-1.10-javadoc.jar" size="433991" download="eager" />
+    <jar href="libs/commons-codec-1.10-sources.jar" size="301033" download="eager" />
+    <jar href="libs/commons-codec-1.10-test-sources.jar" size="173938" download="eager" />
+    <jar href="libs/commons-codec-1.10-tests.jar" size="256617" download="eager" />
+    <jar href="libs/commons-codec-1.10.jar" size="284184" download="eager" />
+    <jar href="libs/commons-codec-1.9.jar" size="263965" download="eager" />
+    <jar href="libs/commons-logging-1.2.jar" size="61829" download="eager" />
+    <jar href="libs/fluent-hc-4.5.1.jar" size="31295" download="eager" />
+    <jar href="libs/httpclient-4.5.1.jar" size="732765" download="eager" />
+    <jar href="libs/httpclient-cache-4.5.1.jar" size="158982" download="eager" />
+    <jar href="libs/httpclient-win-4.5.1.jar" size="17369" download="eager" />
+    <jar href="libs/httpcore-4.4.3.jar" size="326594" download="eager" />
+    <jar href="libs/httpmime-4.5.1.jar" size="40698" download="eager" />
+    <jar href="libs/jna-4.1.0.jar" size="914597" download="eager" />
+    <jar href="libs/jna-platform-4.1.0.jar" size="1464423" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="iedcs.MainApp"  name="IEDCSPlayer" />
+  <update check="background"/>
+</jnlp>

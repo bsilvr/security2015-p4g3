@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 3 elements from project &apos;IEDCS&apos;&#x0A;- Original project: &apos;IEDCS&apos;&#x0A;- Original elements:&#x0A;     iedcs.resources.Location.SNMac.java&#x0A;     iedcs.resources.Location.SNUnix.java&#x0A;     iedcs.resources.Location.SNWindows.java" description="Delete elements" element1="/src&lt;iedcs.resources.Location{SNMac.java" element2="/src&lt;iedcs.resources.Location{SNUnix.java" element3="/src&lt;iedcs.resources.Location{SNWindows.java" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1447630155954" subPackages="false" version="1.0"/>
+</session>
