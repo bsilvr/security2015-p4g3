@@ -66,12 +66,13 @@ public class LoginController {
 
     public void sendDeviceKey() throws ClientProtocolException, IOException {
 
+		System.out.println("iashdiuasbidbasibe");
 
     	String url = Http_Client.getURL() + "users/register_device/";
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
-		post.addHeader("Referer", Http_Client.getURL());
+		//post.addHeader("Referer", Http_Client.getURL());
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
@@ -89,6 +90,10 @@ public class LoginController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
+
+		System.out.println(response);
+
+
 
     }
 
@@ -129,7 +134,7 @@ public class LoginController {
 		if(response.getStatusLine().getStatusCode()==302){
 			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 			setCookies(cookie);
-
+			System.out.println(response);
 			sendDeviceKey();
 
 			mainApp.showBooksOverview(email.getText());
