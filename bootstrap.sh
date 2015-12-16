@@ -8,6 +8,7 @@ pip install Django==1.8.6 djangorestframework pycrypto
 #########################################################
 
 # Copy project folder to apache directory
+echo "Coping project folder"
 cp -r /vagrant/m2/server /var/www/
 #########################################################
 
@@ -16,7 +17,7 @@ mkdir -p /opt/ebooks
 
 ebook = "ebookwebstore"
 
-encfs -S /opt/ebooks /var/www/server/media/books << EOF
+encfs -S -o nonempty /opt/ebooks /var/www/server/media/books << EOF
 x
 1
 256
@@ -31,6 +32,8 @@ Yes
 $ebook
 $ebook
 EOF
+
+cp /vagrant/m2/server/media/books/* /var/www/server/media/books/
 ###########################################################
 
 # Copy apache config file
