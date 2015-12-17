@@ -35,11 +35,14 @@ public class Http_Client {
 	// private static HttpClient client = HttpClientBuilder.create().build();
 
 	private static HttpClient client = createHttpClient_AcceptsUntrustedCerts();
-
+	private static HttpClient client2 = createHttpClient_AcceptsUntrustedCerts();
 	public static String URL = "https://localhost:8080/";
 
 	public static HttpClient getHttpClient(){
 		return client;
+	}
+	public static HttpClient getHttpClient2(){
+		return client2;
 	}
 	public static String getURL(){
 		return URL;
@@ -47,7 +50,6 @@ public class Http_Client {
 
 	@SuppressWarnings("deprecation")
 	private static HttpClient createHttpClient_AcceptsUntrustedCerts() {
-	    HttpClientBuilder b = HttpClientBuilder.create();
 
 	    String pathToKeyStore = "mykeystore.keystore";
 
@@ -75,8 +77,7 @@ public class Http_Client {
 	        sslcontext.init(km, tm, new SecureRandom());
 
 	        HttpClientBuilder builder = HttpClientBuilder.create();
-	        @SuppressWarnings("deprecation")
-			SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	        SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 	        builder.setSSLSocketFactory(sslConnectionFactory);
 
 	        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()

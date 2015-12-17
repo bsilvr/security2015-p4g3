@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import iedcs.MainApp;
 import iedcs.model.Http_Client;
@@ -72,14 +74,18 @@ public class LoginController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
-		//post.addHeader("Referer", Http_Client.getURL());
+		post.setHeader("Referer", Http_Client.getURL());
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
+		System.out.println(email.getText());
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
+		System.out.println(KeyManager.getDeviceKey());
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
+		System.out.println(cookie.substring(cookie.indexOf("=")+1,cookie.length()));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		System.out.println(urlParameters);
 
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 		BufferedReader rd = new BufferedReader(
@@ -92,8 +98,12 @@ public class LoginController {
 		}
 
 		System.out.println(response);
-
-
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
     }
 
@@ -131,10 +141,17 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
+
 		if(response.getStatusLine().getStatusCode()==302){
 			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 			setCookies(cookie);
 			System.out.println(response);
+			HttpEntity entity = response.getEntity();
+			if(entity == null){
+			}
+			else{
+				EntityUtils.consume(entity);
+			}
 			sendDeviceKey();
 
 			mainApp.showBooksOverview(email.getText());

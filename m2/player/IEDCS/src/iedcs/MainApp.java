@@ -27,6 +27,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -40,6 +41,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import iedcs.model.Book;
 import iedcs.model.Http_Client;
@@ -88,8 +90,11 @@ public class MainApp extends Application {
 
 
 		HttpGet request = new HttpGet(url + "?" + query);
+		//request.addHeader("Referer", Http_Client.getURL());
+
 
 		HttpResponse response = Http_Client.getHttpClient().execute(request);
+
 
 		BufferedReader rd = new BufferedReader(
                        new InputStreamReader(response.getEntity().getContent()));
@@ -110,7 +115,12 @@ public class MainApp extends Application {
 
         bookData.add(new Book(author,title,language,cover,id));
 
-
+        HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 
 	}
@@ -136,6 +146,8 @@ public class MainApp extends Application {
 
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
+		System.out.println(response);
+
 		BufferedReader rd = new BufferedReader(
                         new InputStreamReader(response.getEntity().getContent()));
 
@@ -152,8 +164,14 @@ public class MainApp extends Application {
 		for (JsonValue item : items) {
 		  lifo.push(item.asObject().getInt("book_id", 0));
 		}
-
-		return lifo;
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+			return lifo;
+		}
+		else{
+			EntityUtils.consume(entity);
+			return lifo;
+		}
 	}
 
 
