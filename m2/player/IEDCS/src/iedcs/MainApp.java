@@ -90,11 +90,8 @@ public class MainApp extends Application {
 
 
 		HttpGet request = new HttpGet(url + "?" + query);
-		//request.addHeader("Referer", Http_Client.getURL());
-
 
 		HttpResponse response = Http_Client.getHttpClient().execute(request);
-
 
 		BufferedReader rd = new BufferedReader(
                        new InputStreamReader(response.getEntity().getContent()));
@@ -114,13 +111,13 @@ public class MainApp extends Application {
 		String id = Integer.toString(items.get("ebook_id").asInt());
 
         bookData.add(new Book(author,title,language,cover,id));
-
         HttpEntity entity = response.getEntity();
 		if(entity == null){
 		}
 		else{
 			EntityUtils.consume(entity);
 		}
+
 
 
 	}
@@ -146,8 +143,6 @@ public class MainApp extends Application {
 
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 
-		System.out.println(response);
-
 		BufferedReader rd = new BufferedReader(
                         new InputStreamReader(response.getEntity().getContent()));
 
@@ -166,12 +161,12 @@ public class MainApp extends Application {
 		}
 		HttpEntity entity = response.getEntity();
 		if(entity == null){
-			return lifo;
 		}
 		else{
 			EntityUtils.consume(entity);
-			return lifo;
 		}
+
+		return lifo;
 	}
 
 

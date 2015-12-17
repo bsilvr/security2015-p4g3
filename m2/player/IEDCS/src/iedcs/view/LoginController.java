@@ -74,18 +74,14 @@ public class LoginController {
 		HttpPost post = new HttpPost(url);
 		String cookie = LoginController.getCookies();
 
-		post.setHeader("Referer", Http_Client.getURL());
+		post.addHeader("Referer", Http_Client.getURL());
 
 		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("user", email.getText()));
-		System.out.println(email.getText());
 		urlParameters.add(new BasicNameValuePair("device_key", KeyManager.getDeviceKey()));
-		System.out.println(KeyManager.getDeviceKey());
 		urlParameters.add(new BasicNameValuePair("csrfmiddlewaretoken", cookie.substring(cookie.indexOf("=")+1,cookie.length())));
-		System.out.println(cookie.substring(cookie.indexOf("=")+1,cookie.length()));
 
 		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-		System.out.println(urlParameters);
 
 		HttpResponse response = Http_Client.getHttpClient().execute(post);
 		BufferedReader rd = new BufferedReader(
@@ -104,6 +100,7 @@ public class LoginController {
 		else{
 			EntityUtils.consume(entity);
 		}
+
 
     }
 
@@ -141,17 +138,10 @@ public class LoginController {
 			userBooks.append(line);
 		}
 
-
 		if(response.getStatusLine().getStatusCode()==302){
 			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 			setCookies(cookie);
 			System.out.println(response);
-			HttpEntity entity = response.getEntity();
-			if(entity == null){
-			}
-			else{
-				EntityUtils.consume(entity);
-			}
 			sendDeviceKey();
 
 			mainApp.showBooksOverview(email.getText());

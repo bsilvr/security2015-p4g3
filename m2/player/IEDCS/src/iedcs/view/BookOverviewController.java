@@ -177,7 +177,6 @@ public class BookOverviewController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
-		System.out.println(response);
 		HttpEntity entity = response.getEntity();
 		if(entity == null){
 		}
@@ -239,9 +238,13 @@ public class BookOverviewController {
 
 		Header HeaderRandom = response.getFirstHeader("random");
 		Header HeaderIv = response.getFirstHeader("iv");
-		System.out.println(response.getFirstHeader("random"));
-		System.out.println(response);
 
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 		String random = HeaderRandom.getValue();
 		byte[] decoded = Base64.getDecoder().decode(random);
@@ -257,13 +260,6 @@ public class BookOverviewController {
 		byte[] encript = encrypt(KeyManager.getPlayerKey(), KeyManager.getIv(), KeyManager.getRandom());
 
 		KeyManager.setKey1(encript);
-
-		HttpEntity entity = response.getEntity();
-		if(entity == null){
-		}
-		else{
-			EntityUtils.consume(entity);
-		}
 
     }
 
@@ -296,6 +292,12 @@ public class BookOverviewController {
 		}
 
 		Header HeaderKey = response.getFirstHeader("encryptedKey");
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 		String key2 = HeaderKey.getValue();
 
@@ -307,13 +309,6 @@ public class BookOverviewController {
 
 
 		KeyManager.setFileKey(encript);
-
-		HttpEntity entity = response.getEntity();
-		if(entity == null){
-		}
-		else{
-			EntityUtils.consume(entity);
-		}
 
     }
 
@@ -343,15 +338,15 @@ public class BookOverviewController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
-
-		String result1 = userBooks.toString();
-
 		HttpEntity entity = response.getEntity();
 		if(entity == null){
 		}
 		else{
 			EntityUtils.consume(entity);
 		}
+
+		String result1 = userBooks.toString();
+		System.out.println(result1);
 
 		decryptBook(KeyManager.getFileKey(), KeyManager.getIv(), Base64.getDecoder().decode(result1));
     }
