@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import iedcs.MainApp;
 import iedcs.model.Http_Client;
@@ -66,6 +68,7 @@ public class LoginController {
 
     public void sendDeviceKey() throws ClientProtocolException, IOException {
 
+		System.out.println("iashdiuasbidbasibe");
 
     	String url = Http_Client.getURL() + "users/register_device/";
 		HttpPost post = new HttpPost(url);
@@ -89,6 +92,15 @@ public class LoginController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
+
+		System.out.println(response);
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
+
 
     }
 
@@ -129,7 +141,7 @@ public class LoginController {
 		if(response.getStatusLine().getStatusCode()==302){
 			cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 			setCookies(cookie);
-
+			System.out.println(response);
 			sendDeviceKey();
 
 			mainApp.showBooksOverview(email.getText());

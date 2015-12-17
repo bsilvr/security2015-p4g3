@@ -1,21 +1,30 @@
 package iedcs.model;
 
+import java.io.FileInputStream;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
@@ -26,11 +35,14 @@ public class Http_Client {
 	// private static HttpClient client = HttpClientBuilder.create().build();
 
 	private static HttpClient client = createHttpClient_AcceptsUntrustedCerts();
-
-	public static String URL = "https://127.0.0.1:8000/";
+	private static HttpClient client2 = createHttpClient_AcceptsUntrustedCerts();
+	public static String URL = "https://localhost:8080/";
 
 	public static HttpClient getHttpClient(){
 		return client;
+	}
+	public static HttpClient getHttpClient2(){
+		return client2;
 	}
 	public static String getURL(){
 		return URL;
@@ -38,9 +50,53 @@ public class Http_Client {
 
 	@SuppressWarnings("deprecation")
 	private static HttpClient createHttpClient_AcceptsUntrustedCerts() {
-	    HttpClientBuilder b = HttpClientBuilder.create();
 
-	    // setup a Trust Strategy that allows all certificates.
+	    String pathToKeyStore = "mykeystore.keystore";
+
+
+		try {
+			FileInputStream fin = new FileInputStream(pathToKeyStore);
+	        KeyStore keystore  = KeyStore.getInstance("JKS");
+	        keystore.load(fin, "ebookwebstore".toCharArray());
+
+	        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+				factory.init(keystore);
+
+	        TrustManager[] tm = factory.getTrustManagers();
+
+	        KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(
+	                KeyManagerFactory.getDefaultAlgorithm());
+	        kmfactory.init(keystore, "ebookwebstore".toCharArray());
+	        KeyManager[] km = kmfactory.getKeyManagers();
+
+	        SSLContext sslcontext = SSLContext.getInstance("SSL");
+	        sslcontext.init(km, tm, null);
+
+	        // set up a TrustManager that trusts everything
+	        sslcontext.init(km, tm, new SecureRandom());
+
+	        HttpClientBuilder builder = HttpClientBuilder.create();
+	        SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	        builder.setSSLSocketFactory(sslConnectionFactory);
+
+	        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+	                .register("https", sslConnectionFactory)
+	                .build();
+
+	        HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+
+	        builder.setConnectionManager(ccm);
+	        HttpClient client = builder.build();
+	        return client;
+
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    /*// setup a Trust Strategy that allows all certificates.
 	    //
 	    SSLContext sslContext = null;
 		try {
@@ -81,8 +137,8 @@ public class Http_Client {
 	    b.setConnectionManager( connMgr);
 
 	    // finally, build the HttpClient;
-	    //      -- done!
-	    HttpClient client = b.build();
+	    //      -- done!*/
+
 	    return client;
 	}
 }

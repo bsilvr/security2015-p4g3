@@ -117,6 +117,8 @@ public class MainApp extends Application {
 		else{
 			EntityUtils.consume(entity);
 		}
+		System.out.println("b");
+
 
 
 

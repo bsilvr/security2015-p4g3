@@ -183,6 +183,8 @@ public class BookOverviewController {
 		else{
 			EntityUtils.consume(entity);
 		}
+		System.out.println("c");
+
     }
 
     public void sendRestrictions() throws UnsupportedOperationException, IOException{

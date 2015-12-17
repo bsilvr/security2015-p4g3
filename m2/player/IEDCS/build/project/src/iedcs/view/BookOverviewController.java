@@ -18,11 +18,13 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import iedcs.MainApp;
 import iedcs.model.Book;
@@ -175,6 +177,12 @@ public class BookOverviewController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
     }
 
     public void sendRestrictions() throws UnsupportedOperationException, IOException{
@@ -188,7 +196,7 @@ public class BookOverviewController {
 			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
 
 		    location = cl.getCountry(ip).getCode();
-
+		    
 		    cl.close();
 		}catch (IOException e) {
 		    System.out.println("IO Exception");
@@ -230,6 +238,13 @@ public class BookOverviewController {
 
 		Header HeaderRandom = response.getFirstHeader("random");
 		Header HeaderIv = response.getFirstHeader("iv");
+
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 		String random = HeaderRandom.getValue();
 		byte[] decoded = Base64.getDecoder().decode(random);
@@ -277,6 +292,12 @@ public class BookOverviewController {
 		}
 
 		Header HeaderKey = response.getFirstHeader("encryptedKey");
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 		String key2 = HeaderKey.getValue();
 
@@ -317,8 +338,15 @@ public class BookOverviewController {
 		while ((line = rd.readLine()) != null) {
 			userBooks.append(line);
 		}
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
 
 		String result1 = userBooks.toString();
+		System.out.println(result1);
 
 		decryptBook(KeyManager.getFileKey(), KeyManager.getIv(), Base64.getDecoder().decode(result1));
     }
