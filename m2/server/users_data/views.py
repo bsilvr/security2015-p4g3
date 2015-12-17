@@ -176,7 +176,7 @@ def register_device(request):
 
     device.user.add(user)
 
-    return HttpResponse("Device added successfully", status=status.HTTP_200_OK)
+    return Response("Device added successfully", status=status.HTTP_200_OK)
 
 
 

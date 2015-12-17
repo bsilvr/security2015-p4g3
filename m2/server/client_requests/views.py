@@ -197,7 +197,7 @@ def get_file(request):
         return HttpResponse("Book doesn't exists", status=status.HTTP_400_BAD_REQUEST)
 
 
-    file_path = "media/cipher_books/pg" + book_id + ".txt"
+    file_path = "/var/www/server/media/cipher_books/pg" + book_id + ".txt"
 
     cipher_file = open(file_path, 'rb')
 
