@@ -23,7 +23,9 @@ urlpatterns = [
     url(r'^buy_book/$', views.buy_book, name="buy_book"),
     url(r'^get_purchases/$', views.get_purchases, name="get_purchases"),
     url(r'^register_device/$', views.register_device, name="register_device"),
-
+    url(r'^loginCC/$', views.loginCC, name="loginCC"),
+    url(r'^addCC/$', views.addCC, name="addCC"),
+    url(r'^validateLoginCC/$', views.validateLoginCC, name="validateLoginCC"),
 
 
 
