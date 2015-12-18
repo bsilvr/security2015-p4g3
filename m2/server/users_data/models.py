@@ -22,5 +22,5 @@ class Purchases(models.Model):
 
 class PteIdLogin(models.Model):
     transactionId = models.AutoField(primary_key=True)
-    random = models.CharField(max_length=128)
+    random = models.CharField(max_length=200)
     user = models.ForeignKey(User)

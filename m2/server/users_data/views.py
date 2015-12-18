@@ -1,6 +1,7 @@
 import os
 import json
 import base64
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,8 +11,13 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from users_data.models import User_key, Purchases, Devices
+
+from users_data.models import User_key, Purchases, Devices, PteIdLogin
 from books.models import Book
+
+from Crypto.Hash import SHA
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
 
 
 
@@ -177,6 +183,94 @@ def register_device(request):
     device.user.add(user)
 
     return Response("Device added successfully", status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def addCC(request):
+    pub_key = request.POST.get('public_key')
+
+    if not request.user.is_authenticated():
+        return HttpResponse("User not logged in", status=status.HTTP_403_FORBIDDEN)
+
+    user = request.user
+
+    if pub_key == "" or pub_key == None:
+        return HttpResponse("Empty public key", status=status.HTTP_400_BAD_REQUEST)
+
+    if not pub_key.startswith("-----BEGIN PUBLIC KEY-----") and not pub_key.endswith("-----END PUBLIC KEY-----"):
+        return HttpResponse("Invalid public key", status=status.HTTP_400_BAD_REQUEST)
+
+    if not user.user_key.public_key == None:
+        return HttpResponse("User already has public key associated", status=status.HTTP_202_ACCEPTED)
+
+
+    user.user_key.public_key = pub_key
+
+    return Response("Public key added successfully", status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def loginCC(request):
+    email = request.POST.get('user')
+
+    if email==None or email=="":
+        return HttpResponse("Invalid email", status=status.HTTP_400_BAD_REQUEST)
+
+
+    user = User.objects.get(email=email)
+
+    if user == None:
+        return HttpResponse("User doesnt exist", status=status.HTTP_400_BAD_REQUEST)
+
+    if user.user_key.public_key == None:
+        return HttpResponse("User hasnt linked CC", status=status.HTTP_400_BAD_REQUEST)
+
+    random = os.urandom(128)
+
+    randomb64 = base64.b64encode(random)
+
+    transaction = PteIdLogin(random=randomb64, user=user)
+
+    transaction.save()
+
+    response = HttpResponse("Public key added successfully", status=status.HTTP_200_OK)
+
+    response["random"] = randomb64
+    response["transactionID"] = transaction.transactionId
+
+    return response
+
+
+@api_view(['POST'])
+def validateLoginCC(request):
+    transactionId = request.POST.get('transactionId')
+    signed = request.POST.get('signed')
+
+    if transactionId==None:
+        return HttpResponse("Invalid transaction", status=status.HTTP_400_BAD_REQUEST)
+
+    transaction = PteIdLogin.objects.get(transactionId=transactionId)
+
+    if transaction==None:
+        return HttpResponse("Invalid transaction", status=status.HTTP_400_BAD_REQUEST)
+
+    user = transaction.user
+
+    pub_key = user.user_key.public_key
+
+    random = base64.b64decode(transaction.random)
+
+    signature = base64.b64decode(signed)
+
+    key = RSA.importKey(pub_key)
+    h = SHA.new(random)
+    verifier = PKCS1_v1_5.new(key)
+    
+    if verifier.verify(h, signature):
+        login(request, user)
+        return HttpResponse("Log in successfully", status=status.HTTP_200_OK)
+    else:
+        return HttpResponse("Invalid Signature", status=status.HTTP_400_BAD_REQUEST)
 
 
 
