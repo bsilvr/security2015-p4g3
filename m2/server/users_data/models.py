@@ -8,6 +8,7 @@ from player.models import Player
 class User_key(models.Model):
     user = models.OneToOneField(User, primary_key=True)
     user_key = models.CharField(max_length=128)
+    public_key = models.CharField(max_length=400, blank=True, null=True, default=None)
 
 class Devices(models.Model):
     user = models.ManyToManyField(User)
@@ -18,3 +19,8 @@ class Purchases(models.Model):
     user = models.ForeignKey(User)
     book_id = models.ForeignKey(Book)
     random = models.CharField(max_length=128)
+
+class PteIdLogin(models.Model):
+    transactionId = models.AutoField(primary_key=True)
+    random = models.CharField(max_length=128)
+    user = models.ForeignKey(User)
