@@ -3,14 +3,33 @@
 # Install dependencies
 echo "Install packages dependencies..."
 apt-get update
-apt-get install -y apache2 python-pip encfs libapache2-mod-wsgi
+apt-get install -y apache2 python-pip encfs libapache2-mod-wsgi python-dev build-essential
 
-pip install Django==1.8.6 djangorestframework pycrypto
-#########################################################
+pip install virtualenvwrapper
+########################################################
 
 # Copy project folder to apache directory
 echo "Coping project folder..."
 cp -r /vagrant/m2/server /var/www/
+#########################################################
+
+
+# Setting Virtual Environment
+echo "Setting up the Virtual Environment..."
+
+cp /vagrant/m2/server/configs/.bashrc /
+
+source ~/.bashrc
+
+mkvirtualenv webStoreServer --no-site-packages
+
+cd /var/www/server
+
+workon webStoreServer
+
+pip install -r requirements.txt
+
+deactivate
 #########################################################
 
 # Create Secure File System
