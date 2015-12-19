@@ -36,6 +36,8 @@ public class LoginController {
     private PasswordField password;
     @FXML
     private Button loginBtn;
+    @FXML
+    private Button loginCC;
 
     // Reference to the main application.
     private MainApp mainApp;
@@ -165,4 +167,92 @@ public class LoginController {
 
 		return cookies;
 	}
+
+	/**
+     * Called when the user clicks on the read button.
+	 * @throws IOException
+     * @throws ClientProtocolException
+     */
+    @FXML
+    private void handleLoginCC() throws ClientProtocolException, IOException{
+    	String url = Http_Client.getURL() + "users/loginCC/";
+
+		HttpPost post = new HttpPost(url);
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+		urlParameters.add(new BasicNameValuePair("email", email.getText()));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response = Http_Client.getHttpClient().execute(post);
+
+		Header HeaderRandom = response.getFirstHeader("random");
+		Header HeaderTrans = response.getFirstHeader("transactionID");
+
+
+		BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
+		StringBuffer userBooks = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			userBooks.append(line);
+		}
+		HttpEntity entity = response.getEntity();
+		if(entity == null){
+		}
+		else{
+			EntityUtils.consume(entity);
+		}
+
+		if(response.getStatusLine().getStatusCode()==200){
+			KeyManager.createDeviveKey();
+	    	url = Http_Client.getURL() + "users/validateLoginCC/";
+	    	String cookie="";
+
+			post = new HttpPost(url);
+
+			urlParameters = new ArrayList<NameValuePair>();
+			urlParameters.add(new BasicNameValuePair("email", email.getText()));
+			urlParameters.add(new BasicNameValuePair("password", password.getText()));
+
+			post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+			HttpResponse response = Http_Client.getHttpClient().execute(post);
+
+			Header[] cookies =  response.getHeaders("Set-Cookie");
+
+
+			BufferedReader rd = new BufferedReader(
+	                new InputStreamReader(response.getEntity().getContent()));
+
+			StringBuffer userBooks = new StringBuffer();
+			String line = "";
+			while ((line = rd.readLine()) != null) {
+				userBooks.append(line);
+			}
+
+			if(response.getStatusLine().getStatusCode()==302){
+				cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
+				setCookies(cookie);
+				System.out.println(response);
+				sendDeviceKey();
+
+				mainApp.showBooksOverview(email.getText());
+		    }
+			else{
+				Alert alert = new Alert(AlertType.INFORMATION);
+		        alert.setTitle("IEDCS Player");
+		        alert.setHeaderText("Login Failed");
+		        alert.setContentText("Password or email wrong");
+		        alert.showAndWait();
+			}
+	    }
+		else{
+			Alert alert = new Alert(AlertType.INFORMATION);
+	        alert.setTitle("IEDCS Player");
+	        alert.setHeaderText("Login Failed");
+	        alert.setContentText("Email wrong or user haven't linked the CC");
+	        alert.showAndWait();
+		}
+    }
 }
