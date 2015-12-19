@@ -206,6 +206,8 @@ def addCC(request):
 
     user.user_key.public_key = pub_key
 
+    user.save()
+
     return Response("Public key added successfully", status=status.HTTP_200_OK)
 
 
@@ -265,7 +267,7 @@ def validateLoginCC(request):
     key = RSA.importKey(pub_key)
     h = SHA.new(random)
     verifier = PKCS1_v1_5.new(key)
-    
+
     if verifier.verify(h, signature):
         login(request, user)
         return HttpResponse("Log in successfully", status=status.HTTP_200_OK)
