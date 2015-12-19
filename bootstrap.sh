@@ -17,7 +17,7 @@ cp -r /vagrant/m2/server /var/www/
 # Setting Virtual Environment
 echo "Setting up the Virtual Environment..."
 
-cp /vagrant/m2/server/configs/.bashrc /
+cp /vagrant/m2/server/configs/.bashrc ~/
 
 source ~/.bashrc
 
