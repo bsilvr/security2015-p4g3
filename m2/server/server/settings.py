@@ -142,3 +142,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
+AUTHENTICATION_BACKENDS = (
+    # ... your other backends
+    'django.contrib.auth.backends.ModelBackend',
+    'users_data.auth_backend.PasswordlessAuthBackend',
+)

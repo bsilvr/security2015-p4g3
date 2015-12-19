@@ -221,11 +221,12 @@ def loginCC(request):
 
 
     user = User.objects.get(email=email)
+    user_key = User_key.objects.get(user=user)
 
     if user == None:
         return HttpResponse("User doesnt exist", status=status.HTTP_400_BAD_REQUEST)
 
-    if user.user_key.public_key == None:
+    if user_key.public_key == None:
         return HttpResponse("User hasnt linked CC", status=status.HTTP_400_BAD_REQUEST)
 
     random = os.urandom(128)
@@ -236,7 +237,7 @@ def loginCC(request):
 
     transaction.save()
 
-    response = HttpResponse("Public key added successfully", status=status.HTTP_200_OK)
+    response = HttpResponse("Challenge sent", status=status.HTTP_200_OK)
 
     response["random"] = randomb64
     response["transactionID"] = transaction.transactionId
@@ -257,7 +258,7 @@ def validateLoginCC(request):
     if transaction==None:
         return HttpResponse("Invalid transaction", status=status.HTTP_400_BAD_REQUEST)
 
-    user = transaction.user
+    user = User.objects.get(username=transaction.user.username)
 
     pub_key = user.user_key.public_key
 
@@ -270,6 +271,7 @@ def validateLoginCC(request):
     verifier = PKCS1_v1_5.new(key)
 
     if verifier.verify(h, signature):
+        user = authenticate(username=user.username)
         login(request, user)
         return HttpResponse("Log in successfully", status=status.HTTP_200_OK)
     else:

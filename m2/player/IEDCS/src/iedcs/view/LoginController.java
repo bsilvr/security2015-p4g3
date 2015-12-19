@@ -254,6 +254,13 @@ public class LoginController {
 	        }
             /***/
 
+			entity = response.getEntity();
+			if(entity == null){
+			}
+			else{
+				EntityUtils.consume(entity);
+			}
+
 	    	url = Http_Client.getURL() + "users/validateLoginCC/";
 	    	String cookie="";
 
@@ -283,6 +290,12 @@ public class LoginController {
 				cookie = cookies[0].getValue().substring(0, cookies[0].getValue().indexOf(";"));/*   value.substring(value.indexOf("="),value.length()); + ";"*/
 				setCookies(cookie);
 				System.out.println(response);
+				entity = response.getEntity();
+				if(entity == null){
+				}
+				else{
+					EntityUtils.consume(entity);
+				}
 				sendDeviceKey();
 
 				mainApp.showBooksOverview(email.getText());
