@@ -203,8 +203,9 @@ def addCC(request):
     if not user.user_key.public_key == None:
         return HttpResponse("User already has public key associated", status=status.HTTP_202_ACCEPTED)
 
+    user = User_key.objects.get(user=user)
 
-    user.user_key.public_key = pub_key
+    user.public_key = pub_key
 
     user.save()
 
