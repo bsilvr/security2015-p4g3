@@ -17,9 +17,8 @@ cp -r /vagrant/m2/server /var/www/
 # Setting Virtual Environment
 echo "Setting up the Virtual Environment..."
 
-cp /vagrant/m2/server/configs/.bashrc ~/
-
-source ~/.bashrc
+export WORKON_HOME=/home/vagrant/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
 
 mkvirtualenv webStoreServer --no-site-packages
 
