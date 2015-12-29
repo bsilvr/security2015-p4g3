@@ -183,6 +183,8 @@ public class BookOverviewController {
 		else{
 			EntityUtils.consume(entity);
 		}
+		System.out.println("c");
+
     }
 
     public void sendRestrictions() throws UnsupportedOperationException, IOException{
@@ -196,7 +198,7 @@ public class BookOverviewController {
 			LookupService cl = new LookupService("resources/locations/GeoIP.dat",LookupService.GEOIP_MEMORY_CACHE);
 
 		    location = cl.getCountry(ip).getCode();
-		    
+
 		    cl.close();
 		}catch (IOException e) {
 		    System.out.println("IO Exception");

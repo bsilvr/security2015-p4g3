@@ -14,7 +14,8 @@
             <PasswordField fx:id="password" layoutX="96.0" layoutY="131.0" />
             <Label layoutX="96.0" layoutY="29.0" text="Email" />
             <Label layoutX="95.0" layoutY="100.0" text="Password" />
-            <Button fx:id="loginBtn" layoutX="153.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+            <Button fx:id="loginBtn" layoutX="153.0" layoutY="170.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+            <Button fx:id="loginCC" layoutX="270.0" layoutY="56.0" mnemonicParsing="false" onAction="#handleLoginCC" text="Login CC" />
          </children>
       </Pane>
       <Label layoutX="189.0" layoutY="118.0" text="IEDCS Player">
