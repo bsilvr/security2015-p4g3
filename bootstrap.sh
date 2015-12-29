@@ -28,6 +28,29 @@ workon webStoreServer
 
 pip install -r requirements.txt
 
+#########################################################
+
+# Create database
+echo "Creating database..."
+
+DB=/var/www/server/db.sqlite3
+
+if [ -f $DB ];
+then
+   echo "Database already exists, deleting it..."
+   rm $DB
+fi
+
+python /var/www/server/manage.py migrate
+python /var/www/server/db_scripts.py
+
+chown -R www-data /var/www/server/
+chgrp -R www-data /var/www/server/
+
+chown www-data /var/www/server/db.sqlite3
+chgrp www-data /var/www/server/db.sqlite3
+
+# Deactivating virtualenv (if done earlier database would use system python)
 deactivate
 #########################################################
 
@@ -35,7 +58,7 @@ deactivate
 echo "Creating secure file system..."
 mkdir -p /opt/ebooks
 
-ebook = "ebookwebstore"
+EBOOK = "ebookwebstore"
 
 encfs -S -o nonempty /opt/ebooks /var/www/server/media/books << EOF
 x
@@ -49,15 +72,15 @@ No
 No
 0
 Yes
-$ebook
-$ebook
+$EBOOK
+$EBOOK
 EOF
 
 cp /vagrant/m2/server/media/books/* /var/www/server/media/books/
 ###########################################################
 
 # Copy apache config file
-echo "Copying apache file key..."
+echo "Copying apache config file..."
 cp /vagrant/m2/server/configs/apache2/sites-enabled/default-ssl.conf /etc/apache2/sites-enabled/
 ############################################################
 
@@ -66,20 +89,6 @@ echo "Copying cert files..."
 cp /vagrant/m2/server/certs/Server_CA.crt /etc/ssl/certs/
 cp /vagrant/m2/server/certs/webStore.crt /etc/ssl/private/
 cp /vagrant/m2/server/certs/webStoreKey.pem /etc/ssl/private/
-############################################################
-
-# Create database
-echo "Creating database..."
-rm /var/www/server/db.sqlite3
-python /var/www/server/manage.py migrate
-python /var/www/server/db_scripts.py
-
-chown -R www-data /var/www/server/
-chgrp -R www-data /var/www/server/
-
-chown www-data /var/www/server/db.sqlite3
-chgrp www-data /var/www/server/db.sqlite3
-
 ############################################################
 
 # Enable SSL
